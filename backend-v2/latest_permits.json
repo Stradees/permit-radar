@@ -3,32 +3,32 @@
     "source_city": "Boston",
     "source_state": "massachusetts",
     "source_link": "https://www.boston.gov/departments/inspectional-services",
+    "city": "Boston",
     "permit_number": "SF1902269",
     "address": "22 Caspian WY",
     "permit_type": "Short Form Bldg Permit",
     "status": "Open",
     "estimated_value": 55000.0,
-    "issue_date": "2026-10-03T02:19:18",
+    "issue_date": "2026-10-03",
     "description": "remove old and install new front porch, new footings,",
     "owner": null,
     "applicant": "Angel Pimentel",
-    "contractor": null,
-    "city": "Boston"
+    "contractor": null
   },
   {
     "source_city": "Boston",
     "source_state": "massachusetts",
     "source_link": "https://www.boston.gov/departments/inspectional-services",
+    "city": "Boston",
     "permit_number": "E1906480",
     "address": "89 Radcliffe ST",
     "permit_type": "Electrical Permit",
     "status": "Open",
     "estimated_value": 5500.0,
-    "issue_date": "2026-10-03T00:03:53",
+    "issue_date": "2026-10-03",
     "description": "install new outdoor lighting and GFCI outlet + 3x dedicate 20amps line for storage space and lighting.",
     "owner": null,
     "applicant": "pedro rocha",
-    "contractor": null,
-    "city": "Boston"
+    "contractor": null
   }
 ]
