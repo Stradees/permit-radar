@@ -4,6 +4,9 @@
 #   confirmed           -> pronto pra rodar em produção
 #   needs_field_mapping -> fonte existe, falta confirmar campos
 #   no_public_api       -> plataforma sem API pública (Accela / OpenGov / MUNIS)
+#
+# field_map: só precisa listar o que for diferente do padrão. Um campo pode ter uma
+# lista de alternativas, ex.: contractor: [contractor, applicant] (usa o primeiro que existir).
 
 states:
 
@@ -25,9 +28,9 @@ states:
           estimated_value: declared_valuation
           issue_date: issued_date
           description: comments
-          owner: owner
           applicant: applicant
-          contractor: contractor
+          # Boston não publica o campo "contractor"; o "applicant" costuma ser quem executa a obra.
+          contractor: [contractor, applicant]
         source_link: "https://www.boston.gov/departments/inspectional-services"
 
       - name: Cambridge
@@ -38,12 +41,7 @@ states:
           datasets:
             "New Construction": "9qm7-wbdc"
             "Addition/Alteration": "qu2z-8suj"
-          # Conjunto novo e unificado (abril/2026). Por enquanto só "espiamos" as
-          # colunas dele no diário; depois decidimos se ele substitui os dois acima.
-          inspect_datasets:
-            "Permit Finder (novo)": "3wsm-e5jx"
-        field_map:
-          permit_type: _dataset_label
+        field_map: {}
         source_link: "https://www.cambridgema.gov/departments/opendata"
 
       - name: Worcester
