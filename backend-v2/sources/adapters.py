@@ -1,52 +1,101 @@
 """
 Adapters — um por TIPO de sistema de permits, não por cidade.
 
-A ideia central: dezenas de cidades (em MA e em outros estados) usam a mesma
-plataforma por baixo dos panos (Socrata, CKAN, ArcGIS Hub, Accela, OpenGov...).
-Em vez de escrever um scraper por cidade, escrevemos um adapter por PLATAFORMA,
-e cada cidade vira só uma entrada de configuração em registry.yaml.
+Cada cidade vira só uma entrada em registry.yaml. Os adapters sabem conversar
+com a plataforma (CKAN, Socrata, ArcGIS) e traduzem os campos de cada cidade
+para o formato padrão do Permit Radar.
 
-Isso é o que permite escalar para o estado inteiro e depois para outros estados
-sem reescrever código.
+Versão 2.1: os adapters agora DESCOBREM sozinhos os nomes das colunas
+(tentam vários nomes comuns) e escrevem no log os nomes reais encontrados,
+para facilitar o ajuste fino de cada cidade.
 """
 
 from __future__ import annotations
+
+import re
+from datetime import date, datetime, timedelta, timezone
+
 import requests
-from datetime import date, timedelta
-from typing import Any
+
+HEADERS = {"User-Agent": "PermitRadar/1.0 (public permit data aggregator)"}
+
+# Nomes comuns de colunas, em ordem de preferência. O primeiro que existir vence.
+DEFAULT_CANDIDATES = {
+    "permit_number": ["permit_number", "permitnumber", "permit_no", "record_number",
+                      "permit_id", "plannumber", "id"],
+    "address": ["address", "full_address", "site_address", "street_address",
+                "project_address", "location_address", "location"],
+    "permit_type": ["permit_type", "permittypedescr", "permit_type_description",
+                    "record_type", "worktype", "type"],
+    "status": ["status", "permit_status", "current_status"],
+    "estimated_value": ["estimated_cost", "declared_valuation", "total_project_cost",
+                        "project_value", "estimated_value", "valuation", "cost"],
+    "issue_date": ["issue_date", "issued_date", "date_issued", "permit_issue_date",
+                   "issuance_date"],
+    "description": ["description", "comments", "project_description",
+                    "work_description", "scope_of_work", "detailed_description_of_work"],
+    "owner": ["owner", "owner_name", "property_owner", "owner_legal_name"],
+    "applicant": ["applicant", "applicant_name"],
+    "contractor": ["contractor", "contractor_name", "general_contractor",
+                   "gc_name", "licensed_contractor"],
+}
+
+ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}")
+
+
+def _http_get(url: str, params: dict | None = None):
+    """GET que, em caso de erro, devolve a explicação que o servidor deu."""
+    resp = requests.get(url, params=params, headers=HEADERS, timeout=60)
+    if resp.status_code >= 400:
+        raise RuntimeError(f"HTTP {resp.status_code} — resposta do servidor: {resp.text[:400]}")
+    return resp
 
 
 class BaseAdapter:
-    """Interface comum. Todo adapter recebe um `config` (dict do registry.yaml)
-    e um `field_map` (dict) que traduz os nomes de campo da fonte para o
-    formato padrão do Permit Radar."""
+    STANDARD_FIELDS = list(DEFAULT_CANDIDATES.keys())
 
-    STANDARD_FIELDS = [
-        "permit_number", "address", "permit_type", "status",
-        "estimated_value", "issue_date", "description",
-        "owner", "applicant", "contractor",
-    ]
-
-    def __init__(self, city: str, state: str, config: dict, field_map: dict, source_link: str = ""):
+    def __init__(self, city: str, state: str, config: dict, field_map: dict | None, source_link: str = ""):
         self.city = city
         self.state = state
-        self.config = config
-        self.field_map = field_map
+        self.config = config or {}
+        self.field_map = field_map or {}
         self.source_link = source_link
 
+    # ---- a ser implementado por cada plataforma ----
     def fetch_raw(self, days_back: int) -> list[dict]:
         raise NotImplementedError
+
+    # ---- utilidades comuns ----
+    def _pick(self, raw: dict, std_field: str):
+        lower = {str(k).lower(): k for k in raw}
+        configured = self.field_map.get(std_field)
+        if isinstance(configured, list):
+            candidates = list(configured)
+        elif configured:
+            candidates = [configured]
+        else:
+            candidates = []
+        candidates += DEFAULT_CANDIDATES.get(std_field, [])
+        for name in candidates:
+            key = lower.get(str(name).lower())
+            if key is not None and raw.get(key) not in (None, ""):
+                return raw[key]
+        return None
 
     def normalize(self, raw_records: list[dict]) -> list[dict]:
         out = []
         for raw in raw_records:
-            record = {"source_city": self.city, "source_state": self.state, "source_link": self.source_link}
+            rec = {"source_city": self.city, "source_state": self.state,
+                   "source_link": self.source_link, "city": self.city}
             for std_field in self.STANDARD_FIELDS:
-                src_field = self.field_map.get(std_field)
-                record[std_field] = raw.get(src_field) if src_field else None
-            record["estimated_value"] = self._to_float(record.get("estimated_value"))
-            record["city"] = self.city
-            out.append(record)
+                rec[std_field] = self._pick(raw, std_field)
+            rec["estimated_value"] = self._to_float(rec["estimated_value"])
+            rec["issue_date"] = self._to_date(rec["issue_date"])
+            if raw.get("_dataset_label") and not self.field_map.get("permit_type"):
+                rec["permit_type"] = raw["_dataset_label"]
+            if rec.get("permit_number") is not None:
+                rec["permit_number"] = str(rec["permit_number"])
+            out.append(rec)
         return [r for r in out if r.get("permit_number") and r.get("address")]
 
     def fetch(self, days_back: int = 2) -> list[dict]:
@@ -61,69 +110,144 @@ class BaseAdapter:
         except (TypeError, ValueError):
             return None
 
+    @staticmethod
+    def _to_date(v):
+        """Converte vários formatos de data para AAAA-MM-DD."""
+        if v is None or v == "":
+            return None
+        if isinstance(v, (int, float)):
+            seconds = v / 1000 if v > 1e11 else v
+            try:
+                return datetime.fromtimestamp(seconds, tz=timezone.utc).date().isoformat()
+            except (OverflowError, OSError, ValueError):
+                return None
+        s = str(v).strip()
+        if ISO_DATE.match(s):
+            return s[:10]
+        m = re.match(r"^(\d{1,2})/(\d{1,2})/(\d{4})", s)
+        if m:
+            return f"{m.group(3)}-{int(m.group(1)):02d}-{int(m.group(2)):02d}"
+        return s
+
 
 class CKANAdapter(BaseAdapter):
-    """CKAN datastore_search_sql API — usado por Boston (data.boston.gov) e
-    outras cidades/estados que publicam dados via portal CKAN."""
+    """CKAN datastore_search_sql — usado por Boston (data.boston.gov)."""
 
     def fetch_raw(self, days_back: int) -> list[dict]:
         base_url = self.config["base_url"]
         resource_id = self.config["resource_id"]
         date_field = self.config.get("date_field", "issued_date")
         since = (date.today() - timedelta(days=days_back)).isoformat()
-
-        sql = f'SELECT * FROM "{resource_id}" WHERE {date_field} >= \'{since}\' ORDER BY {date_field} DESC LIMIT 1000'
-        resp = requests.get(base_url, params={"sql": sql}, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
+        sql = (f'SELECT * FROM "{resource_id}" WHERE {date_field} >= \'{since}\' '
+               f'ORDER BY {date_field} DESC LIMIT 1000')
+        data = _http_get(base_url, {"sql": sql}).json()
         if not data.get("success"):
             raise RuntimeError(f"CKAN API error ({self.city}): {data}")
         return data["result"]["records"]
 
 
 class SocrataAdapter(BaseAdapter):
-    """Socrata SODA API — usado por Cambridge e muitas outras cidades/estados
-    (Socrata é a plataforma de dados abertos mais comum nos EUA)."""
+    """Socrata SODA API — usado por Cambridge e muitas outras cidades dos EUA."""
+
+    def fetch(self, days_back: int = 2) -> list[dict]:
+        records = self.normalize(self.fetch_raw(days_back))
+        # Proteção final: só devolve permits cuja data de emissão seja recente
+        # (evita tratar permits antigos como "novos" quando o filtro do servidor não pôde ser usado).
+        since = (date.today() - timedelta(days=days_back)).isoformat()
+        return [r for r in records if r.get("issue_date") and r["issue_date"] >= since]
+
+    def _pick_date_field(self, columns: list[str], sample: dict) -> str | None:
+        lowered = {c.lower(): c for c in columns}
+        preferred = self.config.get("date_field")
+        candidates = ([preferred] if preferred else []) + DEFAULT_CANDIDATES["issue_date"]
+        chosen = None
+        for name in candidates:
+            if name and name.lower() in lowered:
+                chosen = lowered[name.lower()]
+                break
+        if chosen is None:
+            for c in columns:
+                if "issue" in c.lower() and "date" in c.lower():
+                    chosen = c
+                    break
+        # Só filtramos por data no servidor se a coluna for uma data de verdade (AAAA-MM-DD...).
+        if chosen and ISO_DATE.match(str(sample.get(chosen, ""))):
+            return chosen
+        return None
+
+    def _log_schema(self, label: str, dataset_id: str, rows: list[dict]):
+        if not rows:
+            print(f"[info] {self.city} / {label} ({dataset_id}): sem linhas de amostra")
+            return
+        print(f"[info] {self.city} / {label} ({dataset_id}) COLUNAS: {sorted(rows[0].keys())}")
+        sample = {k: (str(v)[:60]) for k, v in rows[0].items()}
+        print(f"[info] {self.city} / {label} EXEMPLO: {sample}")
 
     def fetch_raw(self, days_back: int) -> list[dict]:
         domain = self.config["domain"]
-        datasets: dict[str, str] = self.config["datasets"]  # {label: dataset_id}
-        date_field = self.config.get("date_field", "issued_date")
         since = (date.today() - timedelta(days=days_back)).isoformat()
 
-        all_records = []
-        for label, dataset_id in datasets.items():
+        # Conjuntos só para "espiar" as colunas (não entram nos resultados).
+        for label, dataset_id in (self.config.get("inspect_datasets") or {}).items():
+            try:
+                url = f"https://{domain}/resource/{dataset_id}.json"
+                rows = _http_get(url, {"$limit": 2}).json()
+                self._log_schema(label, dataset_id, rows)
+            except Exception as e:  # noqa: BLE001
+                print(f"[info] não consegui espiar {label}: {e}")
+
+        all_records: list[dict] = []
+        for label, dataset_id in (self.config.get("datasets") or {}).items():
             url = f"https://{domain}/resource/{dataset_id}.json"
-            params = {
-                "$where": f"{date_field} >= '{since}T00:00:00'",
-                "$order": f"{date_field} DESC",
-                "$limit": 1000,
-            }
-            resp = requests.get(url, params=params, timeout=30)
-            resp.raise_for_status()
-            for rec in resp.json():
-                rec["_dataset_label"] = label
-                all_records.append(rec)
+            try:
+                sample_rows = _http_get(url, {"$limit": 2}).json()
+                self._log_schema(label, dataset_id, sample_rows)
+                if not sample_rows:
+                    continue
+                columns = list(sample_rows[0].keys())
+                date_field = self._pick_date_field(columns, sample_rows[0])
+
+                params = {"$limit": 1000}
+                if date_field:
+                    params["$where"] = f"{date_field} >= '{since}T00:00:00'"
+                    params["$order"] = f"{date_field} DESC"
+                else:
+                    params["$order"] = ":updated_at DESC"
+                    params["$limit"] = 200
+                    print(f"[info] {self.city} / {label}: sem coluna de data utilizável; "
+                          f"usando os 200 registros mais recentemente atualizados")
+
+                try:
+                    rows = _http_get(url, params).json()
+                except RuntimeError as e:
+                    print(f"[aviso] {self.city} / {label}: filtro falhou ({e}); tentando sem filtro")
+                    rows = _http_get(url, {"$order": ":updated_at DESC", "$limit": 200}).json()
+
+                for rec in rows:
+                    rec["_dataset_label"] = label
+                    all_records.append(rec)
+            except Exception as e:  # noqa: BLE001
+                print(f"[erro] {self.city} / {label} ({dataset_id}): {e}")
         return all_records
 
 
 class ArcGISAdapter(BaseAdapter):
-    """ArcGIS Hub / FeatureServer — usado por Worcester, West Springfield e
-    muitas cidades menores que publicam via ArcGIS Open Data.
-
-    IMPORTANTE: a filtragem por data é feita no cliente (não via query da API)
-    porque campos de data no ArcGIS costumam vir em epoch milissegundos e
-    variam de dataset para dataset — confirme o nome e formato do campo de
-    data antes de usar em produção (ver `status: needs_field_mapping` no
-    registry.yaml)."""
+    """ArcGIS Hub (GeoJSON) — usado por Worcester e outras cidades."""
 
     def fetch_raw(self, days_back: int) -> list[dict]:
         geojson_url = self.config["geojson_url"]
-        resp = requests.get(geojson_url, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
+        data = _http_get(geojson_url).json()
         features = data.get("features", [])
-        return [f["properties"] for f in features]
+        rows = [f.get("properties", {}) for f in features]
+        if rows:
+            print(f"[info] {self.city} COLUNAS: {sorted(rows[0].keys())}")
+            print(f"[info] {self.city} EXEMPLO: { {k: str(v)[:60] for k, v in rows[0].items()} }")
+        return rows
+
+    def fetch(self, days_back: int = 2) -> list[dict]:
+        records = self.normalize(self.fetch_raw(days_back))
+        since = (date.today() - timedelta(days=days_back)).isoformat()
+        return [r for r in records if r.get("issue_date") and r["issue_date"] >= since]
 
 
 ADAPTERS = {
