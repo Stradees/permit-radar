@@ -5,8 +5,9 @@ Cada cidade vira só uma entrada em registry.yaml. Os adapters sabem conversar
 com a plataforma (CKAN, Socrata, ArcGIS) e traduzem os campos de cada cidade
 para o formato padrão do Permit Radar.
 
-Versão 2.3: os adapters descobrem sozinhos os nomes das colunas (tentam vários
-nomes comuns). Para ver colunas e tipos de permit no log, defina PERMIT_DEBUG=1.
+Versão 2.4: filtra permits de especialidade, classifica o tipo de obra
+(New Construction / Addition / Renovation / Demolition) e descobre colunas sozinho.
+Para ver colunas e tipos de permit no log, defina PERMIT_DEBUG=1.
 """
 
 from __future__ import annotations
@@ -45,6 +46,56 @@ DEFAULT_CANDIDATES = {
 }
 
 ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}")
+
+
+# ---------------------------------------------------------------------------
+# Relevância e classificação
+# O radar é para construção e reforma. Permits de especialidade (elétrico,
+# hidráulico, gás, alarme...) e administrativos (certificados, emendas) ficam de fora.
+# ---------------------------------------------------------------------------
+INCLUDE_TYPE_RE = re.compile(
+    r"(building|bldg|short form|long form|erect|new construction|foundation|alteration|"
+    r"addition|demolition|remodel|renovation|construction|roof|siding|residential|commercial)", re.I)
+EXCLUDE_TYPE_RE = re.compile(
+    r"\b(amendment|certificate|electrical|plumbing|gas|mechanical|sheet metal|fire alarms?|"
+    r"low voltage|sprinkler|signs?|occupancy|excavation|asbestos|tents?|dumpster|food|tobacco)\b", re.I)
+EVENT_DESC_RE = re.compile(r"\b(tents?|beer garden|festival|one day event|1 day event)\b", re.I)
+
+NEW_CONSTRUCTION_DESC_RE = re.compile(
+    r"\bnew (building|structure|construction|single[- ]family|two[- ]family|three[- ]family|"
+    r"multi[- ]?family|dwelling|home|house)\b", re.I)
+WORK_ON_EXISTING_RE = re.compile(r"\b(renovat\w*|remodel\w*|alteration\w*|repair\w*|replac\w*|install\w*)\b", re.I)
+DEMOLITION_RE = re.compile(r"\b(demolish\w*|demolition|demo)\b", re.I)
+BUILD_WORDS_RE = re.compile(r"\b(renovat\w*|remodel\w*|replac\w*|install\w*|build|construct\w*|new|rebuild\w*)\b", re.I)
+ADDITION_RE = re.compile(r"\b(addition|dormer|sunroom|bump[- ]?out)\b", re.I)
+
+
+def is_relevant(permit_type, description=None) -> bool:
+    """True se o permit é de construção/reforma geral (e não de especialidade ou administrativo)."""
+    t = permit_type or ""
+    if t:
+        if EXCLUDE_TYPE_RE.search(t):
+            return False
+        if not INCLUDE_TYPE_RE.search(t):
+            return False
+    if description and EVENT_DESC_RE.search(description):
+        return False
+    return True
+
+
+def classify_permit(permit_type, description=None) -> str:
+    """Padroniza o tipo de obra: New Construction / Addition / Renovation / Demolition."""
+    t = (permit_type or "")
+    d = (description or "")
+    if re.search(r"new construction|erect", t, re.I):
+        return "New Construction"
+    if NEW_CONSTRUCTION_DESC_RE.search(d) and not WORK_ON_EXISTING_RE.search(d):
+        return "New Construction"
+    if re.search(r"demolition", t, re.I) or (DEMOLITION_RE.search(d) and not BUILD_WORDS_RE.search(d)):
+        return "Demolition"
+    if ADDITION_RE.search(d):
+        return "Addition"
+    return "Renovation"
 
 
 def _http_get(url: str, params: dict | None = None):
@@ -88,6 +139,7 @@ class BaseAdapter:
 
     def normalize(self, raw_records: list[dict]) -> list[dict]:
         out = []
+        ignored = 0
         for raw in raw_records:
             rec = {"source_city": self.city, "source_state": self.state,
                    "source_link": self.source_link, "city": self.city}
@@ -95,12 +147,22 @@ class BaseAdapter:
             for std_field in self.STANDARD_FIELDS:
                 rec[std_field] = self._pick(clean, std_field)
             rec["estimated_value"] = self._to_float(rec["estimated_value"])
+            # Valores como $0,01 ou $1 são marcadores administrativos, não o custo real da obra.
+            if rec["estimated_value"] is not None and rec["estimated_value"] < 10:
+                rec["estimated_value"] = None
             rec["issue_date"] = self._to_date(rec["issue_date"])
             if not rec.get("permit_type"):
                 rec["permit_type"] = raw.get("_dataset_label")
             if rec.get("permit_number") is not None:
                 rec["permit_number"] = str(rec["permit_number"])
+            if not is_relevant(rec.get("permit_type"), rec.get("description")):
+                ignored += 1
+                continue
+            rec["category"] = classify_permit(rec.get("permit_type"), rec.get("description"))
             out.append(rec)
+        if ignored:
+            print(f"[info] {self.city}: {ignored} permits de especialidade/administrativos ignorados "
+                  f"(elétrico, hidráulico, gás, alarme, certificados...)")
         return [r for r in out if r.get("permit_number") and r.get("address")]
 
     def fetch(self, days_back: int = 2) -> list[dict]:
