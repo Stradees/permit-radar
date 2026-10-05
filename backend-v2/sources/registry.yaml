@@ -1,0 +1,137 @@
+# registry.yaml — cadastro central de cidades/estados cobertos pelo Permit Radar.
+#
+# Cada cidade é uma entrada de CONFIGURAÇÃO, não um script. Adicionar uma nova
+# cidade que usa uma plataforma já suportada (ckan / socrata / arcgis) é só
+# adicionar um bloco aqui — sem escrever código novo.
+#
+# status:
+#   confirmed          -> API testada e pronta pra rodar em produção
+#   needs_field_mapping-> a fonte existe e é do tipo certo, mas os nomes dos
+#                          campos ainda não foram confirmados (rodar fetch_raw
+#                          uma vez e conferir antes de ativar)
+#   no_public_api       -> plataforma não tem API pública (Accela / OpenGov
+#                          citizen portal / MUNIS) — precisa de automação de
+#                          navegador (Playwright) ou pedido formal de dados à
+#                          cidade. Não incluído no fetch automático ainda.
+
+states:
+
+  massachusetts:
+    cities:
+
+      - name: Boston
+        source_type: ckan
+        status: confirmed
+        config:
+          base_url: "https://data.boston.gov/api/3/action/datastore_search_sql"
+          resource_id: "6ddcd912-32a0-43df-9908-63574f8c7e77"
+          date_field: "issued_date"
+        field_map:
+          permit_number: permitnumber
+          address: address
+          permit_type: permittypedescr
+          status: status
+          estimated_value: declared_valuation
+          issue_date: issued_date
+          description: comments
+          owner: owner
+          applicant: applicant
+          contractor: contractor
+        source_link: "https://www.boston.gov/departments/inspectional-services"
+
+      - name: Cambridge
+        source_type: socrata
+        status: confirmed
+        config:
+          domain: "data.cambridgema.gov"
+          datasets:
+            "New Construction": "9qm7-wbdc"
+            "Addition/Alteration": "qu2z-8suj"
+          date_field: "issued_date"
+        field_map:
+          permit_number: permitnumber
+          address: address
+          permit_type: _dataset_label
+          status: status
+          estimated_value: estimated_cost
+          issue_date: issued_date
+          description: description
+          owner: owner
+          applicant: applicant
+          contractor: contractor
+        source_link: "https://www.cambridgema.gov/departments/opendata"
+
+      - name: Worcester
+        source_type: arcgis
+        status: needs_field_mapping
+        config:
+          geojson_url: "https://opendata.arcgis.com/datasets/c2309c7a5f0a491d88aac4a80602e5aa_0.geojson"
+        field_map: {}   # preencher depois de inspecionar um fetch_raw() de amostra
+        source_link: "https://opendata.worcesterma.gov/datasets/building-permits/explore"
+        notes: >
+          Item ArcGIS confirmado (c2309c7a5f0a491d88aac4a80602e5aa). A URL do
+          geojson segue o padrão público do ArcGIS Hub mas não foi testada
+          neste ambiente (sem acesso à internet aqui). Rodar uma vez e
+          confirmar os nomes reais dos campos antes de ligar em produção.
+
+      - name: West Springfield
+        source_type: arcgis
+        status: needs_field_mapping
+        config:
+          geojson_url: ""  # localizar o item id em opendata-westspringfield.hub.arcgis.com
+        field_map: {}
+        source_link: "https://opendata-westspringfield.hub.arcgis.com/"
+
+      # ---- Cidades confirmadas, mas sem API pública (precisam de outra abordagem) ----
+
+      - name: Springfield
+        source_type: opengov_portal
+        status: no_public_api
+        portal_url: "https://springfieldma.portal.opengov.com/"
+        notes: "Sem API pública documentada. Candidato a automação via Playwright ou pedido de exportação de dados à cidade."
+
+      - name: New Bedford
+        source_type: opengov_portal
+        status: no_public_api
+        portal_url: "https://newbedfordma.portal.opengov.com/"
+
+      - name: Haverhill
+        source_type: opengov_portal
+        status: no_public_api
+        portal_url: "https://haverhillma.portal.opengov.com/"
+
+      - name: Brookline
+        source_type: accela
+        status: no_public_api
+        portal_url: "https://aca-prod.accela.com/"
+        notes: "Accela Citizen Access. Sem API pública padrão nesta instância; verificar se a cidade publica no formato aberto BLDS (Building Permit Data Standard) da Accela."
+
+      - name: Lowell
+        source_type: munis_css
+        status: no_public_api
+        portal_url: "https://www.lowellma.gov/1631/Online-Permitting"
+        notes: "Portal MUNIS Citizen Self Service (Tyler Technologies). O site menciona relatórios mensais de permits disponíveis mediante solicitação — vale confirmar antes de partir para scraping."
+
+      - name: Quincy
+        source_type: opengov_portal
+        status: no_public_api
+        portal_url: "https://quincyma.portal.opengov.com/"
+        notes: "Migrou de Accela/ViewPermit para ViewPoint (agora sob OpenGov). Sem API pública confirmada."
+
+      - name: Gloucester
+        source_type: opengov_portal
+        status: no_public_api
+        portal_url: "https://gloucesterma.portal.opengov.com/"
+
+      - name: Lexington
+        source_type: opengov_portal
+        status: no_public_api
+        portal_url: "https://lexingtonma.portal.opengov.com/"
+
+      # ---- Restante das ~340 cidades/towns de MA: entram aqui incrementalmente ----
+      # Cada nova entrada = pesquisar qual sistema a cidade usa (Accela / OpenGov /
+      # ArcGIS / Socrata / CKAN / site próprio) e adicionar o bloco correspondente.
+
+  # Próximo estado: mesma estrutura, ativar quando formos expandir.
+  # new_york:
+  #   cities: []
