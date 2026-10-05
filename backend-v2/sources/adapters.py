@@ -5,9 +5,7 @@ Cada cidade vira só uma entrada em registry.yaml. Os adapters sabem conversar
 com a plataforma (CKAN, Socrata, ArcGIS) e traduzem os campos de cada cidade
 para o formato padrão do Permit Radar.
 
-Versão 2.1: os adapters agora DESCOBREM sozinhos os nomes das colunas
-(tentam vários nomes comuns) e escrevem no log os nomes reais encontrados,
-para facilitar o ajuste fino de cada cidade.
+Versão 2.2: nomes de colunas reais de Cambridge + diagnóstico de dados recentes.
 """
 
 from __future__ import annotations
@@ -29,15 +27,17 @@ DEFAULT_CANDIDATES = {
                     "record_type", "worktype", "type"],
     "status": ["status", "permit_status", "current_status"],
     "estimated_value": ["estimated_cost", "declared_valuation", "total_project_cost",
-                        "project_value", "estimated_value", "valuation", "cost"],
+                        "total_cost_of_construction", "total_cost", "project_value",
+                        "estimated_value", "valuation", "building_cost", "cost"],
     "issue_date": ["issue_date", "issued_date", "date_issued", "permit_issue_date",
                    "issuance_date"],
     "description": ["description", "comments", "project_description",
-                    "work_description", "scope_of_work", "detailed_description_of_work"],
+                    "work_description", "scope_of_work", "description_of_work",
+                    "detailed_description_of_work", "isd_approved_description"],
     "owner": ["owner", "owner_name", "property_owner", "owner_legal_name"],
     "applicant": ["applicant", "applicant_name"],
-    "contractor": ["contractor", "contractor_name", "general_contractor",
-                   "gc_name", "licensed_contractor"],
+    "contractor": ["contractor", "contractor_name", "general_contractor", "firm_name",
+                   "licensed_name", "gc_name", "licensed_contractor"],
 }
 
 ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}")
@@ -87,12 +87,13 @@ class BaseAdapter:
         for raw in raw_records:
             rec = {"source_city": self.city, "source_state": self.state,
                    "source_link": self.source_link, "city": self.city}
+            clean = {k: v for k, v in raw.items() if k != "_dataset_label"}
             for std_field in self.STANDARD_FIELDS:
-                rec[std_field] = self._pick(raw, std_field)
+                rec[std_field] = self._pick(clean, std_field)
             rec["estimated_value"] = self._to_float(rec["estimated_value"])
             rec["issue_date"] = self._to_date(rec["issue_date"])
-            if raw.get("_dataset_label") and not self.field_map.get("permit_type"):
-                rec["permit_type"] = raw["_dataset_label"]
+            if not rec.get("permit_type"):
+                rec["permit_type"] = raw.get("_dataset_label")
             if rec.get("permit_number") is not None:
                 rec["permit_number"] = str(rec["permit_number"])
             out.append(rec)
@@ -183,6 +184,26 @@ class SocrataAdapter(BaseAdapter):
         sample = {k: (str(v)[:60]) for k, v in rows[0].items()}
         print(f"[info] {self.city} / {label} EXEMPLO: {sample}")
 
+    def _log_freshness(self, url: str, label: str, date_field: str | None):
+        """Escreve no log a data do permit mais recente do conjunto."""
+        if not date_field:
+            return
+        try:
+            res = _http_get(url, {"$select": f"max({date_field}) as latest"}).json()
+            print(f"[info] {self.city} / {label}: permit mais recente emitido em: {res}")
+        except Exception as e:  # noqa: BLE001
+            print(f"[info] {self.city} / {label}: não consegui medir a data mais recente: {e}")
+
+    def _log_types(self, url: str, label: str):
+        """Escreve no log os tipos de permit mais frequentes do conjunto."""
+        try:
+            res = _http_get(url, {"$select": "permit_type, count(*) as n",
+                                  "$group": "permit_type", "$order": "n DESC",
+                                  "$limit": 40}).json()
+            print(f"[info] {self.city} / {label}: TIPOS DE PERMIT: {res}")
+        except Exception as e:  # noqa: BLE001
+            print(f"[info] {self.city} / {label}: não consegui listar tipos: {e}")
+
     def fetch_raw(self, days_back: int) -> list[dict]:
         domain = self.config["domain"]
         since = (date.today() - timedelta(days=days_back)).isoformat()
@@ -193,6 +214,9 @@ class SocrataAdapter(BaseAdapter):
                 url = f"https://{domain}/resource/{dataset_id}.json"
                 rows = _http_get(url, {"$limit": 2}).json()
                 self._log_schema(label, dataset_id, rows)
+                if rows:
+                    self._log_freshness(url, label, self._pick_date_field(list(rows[0].keys()), rows[0]))
+                self._log_types(url, label)
             except Exception as e:  # noqa: BLE001
                 print(f"[info] não consegui espiar {label}: {e}")
 
@@ -206,6 +230,7 @@ class SocrataAdapter(BaseAdapter):
                     continue
                 columns = list(sample_rows[0].keys())
                 date_field = self._pick_date_field(columns, sample_rows[0])
+                self._log_freshness(url, label, date_field)
 
                 params = {"$limit": 1000}
                 if date_field:
@@ -223,6 +248,7 @@ class SocrataAdapter(BaseAdapter):
                     print(f"[aviso] {self.city} / {label}: filtro falhou ({e}); tentando sem filtro")
                     rows = _http_get(url, {"$order": ":updated_at DESC", "$limit": 200}).json()
 
+                print(f"[info] {self.city} / {label}: {len(rows)} registros recentes encontrados")
                 for rec in rows:
                     rec["_dataset_label"] = label
                     all_records.append(rec)
