@@ -5,15 +5,19 @@ Cada cidade vira só uma entrada em registry.yaml. Os adapters sabem conversar
 com a plataforma (CKAN, Socrata, ArcGIS) e traduzem os campos de cada cidade
 para o formato padrão do Permit Radar.
 
-Versão 2.2: nomes de colunas reais de Cambridge + diagnóstico de dados recentes.
+Versão 2.3: os adapters descobrem sozinhos os nomes das colunas (tentam vários
+nomes comuns). Para ver colunas e tipos de permit no log, defina PERMIT_DEBUG=1.
 """
 
 from __future__ import annotations
 
+import os
 import re
 from datetime import date, datetime, timedelta, timezone
 
 import requests
+
+DEBUG = bool(os.environ.get("PERMIT_DEBUG"))
 
 HEADERS = {"User-Agent": "PermitRadar/1.0 (public permit data aggregator)"}
 
@@ -177,6 +181,8 @@ class SocrataAdapter(BaseAdapter):
         return None
 
     def _log_schema(self, label: str, dataset_id: str, rows: list[dict]):
+        if not DEBUG:
+            return
         if not rows:
             print(f"[info] {self.city} / {label} ({dataset_id}): sem linhas de amostra")
             return
@@ -208,8 +214,9 @@ class SocrataAdapter(BaseAdapter):
         domain = self.config["domain"]
         since = (date.today() - timedelta(days=days_back)).isoformat()
 
-        # Conjuntos só para "espiar" as colunas (não entram nos resultados).
-        for label, dataset_id in (self.config.get("inspect_datasets") or {}).items():
+        # Conjuntos só para "espiar" as colunas (não entram nos resultados). Só roda em modo depuração.
+        inspect = (self.config.get("inspect_datasets") or {}) if DEBUG else {}
+        for label, dataset_id in inspect.items():
             try:
                 url = f"https://{domain}/resource/{dataset_id}.json"
                 rows = _http_get(url, {"$limit": 2}).json()
