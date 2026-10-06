@@ -332,6 +332,7 @@
   .pr-cat.addition{color:#7FB6FF;background:rgba(127,182,255,.12);border-color:rgba(127,182,255,.3);}
   .pr-cat.renovation{color:var(--accent);background:var(--accent-dim);border-color:rgba(242,169,59,.35);}
   .pr-cat.demolition{color:#E8806F;background:rgba(232,128,111,.12);border-color:rgba(232,128,111,.3);}
+  .pr-cat.unspecified{color:var(--ink-dim);background:var(--neutral-dim);border-color:var(--bp-line);}
   .pr-sub{display:block;color:var(--ink-dim);font-size:11px;margin-top:3px;max-width:190px;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .pr-contractor{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -510,7 +511,7 @@
     if(/approved/.test(s)) return "approved";
     return "finaled";
   }
-  function catClass(c){ return {"New Construction":"new","Addition":"addition","Renovation":"renovation","Demolition":"demolition"}[c] || "renovation"; }
+  function catClass(c){ return {"New Construction":"new","Addition":"addition","Renovation":"renovation","Demolition":"demolition","Unspecified":"unspecified"}[c] || "unspecified"; }
   function isNew(d){
     if(!d || !maxDate) return false;
     const a = new Date(d+"T00:00:00"), b = new Date(maxDate+"T00:00:00");
@@ -543,7 +544,7 @@
   }
   function populateFilters(){
     const uniq = k => [...new Set(PERMITS.map(p=>p[k]).filter(Boolean))].sort();
-    fillSelect($("pr-filter-cat"), ["New Construction","Addition","Renovation","Demolition"].filter(c => PERMITS.some(p=>p.category===c)));
+    fillSelect($("pr-filter-cat"), ["New Construction","Addition","Renovation","Demolition","Unspecified"].filter(c => PERMITS.some(p=>p.category===c)));
     fillSelect($("pr-filter-city"), uniq("city"));
     fillSelect($("pr-filter-status"), uniq("status"));
   }
