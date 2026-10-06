@@ -18,7 +18,8 @@ import os
 import re
 import time
 from datetime import date, datetime, timedelta, timezone
-from urllib.parse import urljoin
+import urllib.robotparser as robotparser
+from urllib.parse import urljoin, urlparse
 
 import requests
 
@@ -114,6 +115,27 @@ def classify_permit(permit_type, description=None) -> str:
     if ADDITION_RE.search(d):
         return "Addition"
     return "Renovation"
+
+
+_ROBOTS_CACHE: dict = {}
+
+
+def robots_allows(url: str, agent: str = "PermitRadar") -> bool:
+    """Respeita o robots.txt do site. Sem robots.txt acessível, segue de boa-fé."""
+    p = urlparse(url)
+    base = f"{p.scheme}://{p.netloc}"
+    rp = _ROBOTS_CACHE.get(base)
+    if rp is None:
+        rp = robotparser.RobotFileParser()
+        rp.set_url(base + "/robots.txt")
+        try:
+            rp.read()
+        except Exception:  # noqa: BLE001
+            rp = False
+        _ROBOTS_CACHE[base] = rp
+    if rp is False:
+        return True
+    return rp.can_fetch(agent, url)
 
 
 def _http_get(url: str, params: dict | None = None):
@@ -501,12 +523,18 @@ class FileReportAdapter(BaseAdapter):
         return rows
 
     def fetch_raw(self, days_back: int) -> list[dict]:
-        html = _http_get(self.config["index_url"]).text
+        index_url = self.config["index_url"]
+        if not robots_allows(index_url):
+            raise RuntimeError(f"o robots.txt de {urlparse(index_url).netloc} não permite coleta automática desta página")
+        html = _http_get(index_url).text
         urls = self._find_links(html)
         print(f"[info] {self.city}: {len(urls)} arquivo(s) de relatório encontrado(s)")
         rows: list[dict] = []
         for url in urls:
             try:
+                if not robots_allows(url):
+                    print(f"[aviso] {self.city}: robots.txt não permite baixar {url}; arquivo ignorado")
+                    continue
                 resp = _http_get(url)
                 data = resp.content
                 parsed = self._parse_xlsx(data) if data[:2] == b"PK" else self._parse_csv(data)

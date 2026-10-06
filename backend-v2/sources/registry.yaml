@@ -7,6 +7,7 @@
 #   to_investigate-> existe consulta online, plataforma ainda não identificada
 #   address_only  -> só dá para consultar por endereço (não serve para listar permits novos)
 #   login_required-> exige cadastro/login (não automatizamos)
+#   robots_blocked-> o robots.txt do sistema não permite coleta automática (respeitamos)
 #   planning_only -> só processos de planejamento/zoneamento
 #
 # access: open_data_api | file_report | search_by_address_or_record | address_only | login_required | planning_only
@@ -82,18 +83,20 @@ states:
           min_days_back: 45
         field_map: {}
         source_link: "https://www.readingma.gov/959/Monthly-Building-Permit-Report"
+        info_url: "https://www.readingma.gov/959/Monthly-Building-Permit-Report"
         portal_url: "https://readingma.portal.opengov.com/"
-        notes: "Relatório mensal em Excel (confirmado). Colunas ainda não vistas: o primeiro log mostra os nomes reais."
+        notes: "Relatório mensal em Excel (confirmado). O teste de saúde de 06/10 retornou 0 permits sem erro; falta ver as colunas reais. O portal OpenGov deles não permite coleta (robots.txt)."
 
       # ======================= PDF: PRECISAM DE ADAPTADOR DE PLATAFORMA =======================
 
       - name: Newton
         source_type: opengov_portal
-        status: needs_adapter
+        status: robots_blocked
         access: search_by_address_or_record
         portal_url: "https://newtonma.viewpointcloud.com/search"
         info_url: "https://www.newtonma.gov/government/inspectional-services"
-        notes: "OpenGov/ViewpointCloud (NewGov). Consulta sem login por endereço ou número do registro; os detalhes trazem escopo e contratante."
+        notes: "OpenGov/ViewpointCloud: o robots.txt não permite coleta automática (verificado em 06/10/2026). Alternativas: relatórios que a cidade publique ou pedido formal de dados. O site da prefeitura também bloqueia acesso automático; a página Reports da Inspectional Services pode ter relatórios."
+
 
       - name: Brookline
         source_type: accela
@@ -107,29 +110,38 @@ states:
         source_type: permiteyes
         status: needs_adapter
         access: search_by_address_or_record
+        portal_url: "https://permiteyes.us/northreading/publicview.php"
         info_url: "https://www.northreadingma.gov/210/Project-Updates"
-        notes: "PermitEyes Public View (permits ativos desde set/2019)."
+        probe: true
+        notes: "PermitEyes Public View (robots.txt permite). Permits ativos desde set/2019."
+
 
       - name: Concord
         source_type: permiteyes
         status: needs_adapter
         access: search_by_address_or_record
+        portal_url: "https://permiteyes.us/concord/publicview.php"
         info_url: "https://www.concordma.gov/589/Building-Permit-Information"
-        notes: "PermitEyes Public View: building permits emitidos desde 01/01/2021."
+        notes: "PermitEyes Public View (robots.txt permite). Building permits emitidos desde 01/01/2021."
+
 
       - name: Mansfield
         source_type: permiteyes
         status: needs_adapter
         access: search_by_address_or_record
+        portal_url: "https://permiteyes.us/mansfield/publicview.php"
         info_url: "https://www.mansfieldma.com/156/Building-Department"
-        notes: "PermitEyes Public View."
+        notes: "PermitEyes Public View (robots.txt permite). O site da prefeitura bloqueia acesso automático; endereço do PermitEyes ainda a confirmar."
+
 
       - name: Pittsfield
         source_type: permiteyes
         status: needs_adapter
         access: search_by_address_or_record
+        portal_url: "https://permiteyes.us/berkshire/publicview.php"
         info_url: "https://www.pittsfieldma.gov/226/Public-View---Permit-Records"
-        notes: "PermitEyes Public View: registros desde 1985; busca por número e rua."
+        notes: "PermitEyes Public View (robots.txt permite). Região Berkshire; registros desde 1985."
+
 
       - name: Great Barrington
         source_type: permiteyes
@@ -137,7 +149,8 @@ states:
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/berkshire/greatbarringtonpublicview.php"
         info_url: "https://greatbarringtonma.civicpluswebopen.com/building-department/pages/online-permitting"
-        notes: "PermitEyes Public View confirmado: colunas Issue Date, Applicant, tipo e status; a tabela carrega por script (endereço de dados a descobrir)."
+        notes: "PermitEyes Public View (robots.txt permite). Colunas: Issue Date, Applicant, tipo e status."
+
 
       # ======================= PDF: SEM FEED UTILIZÁVEL AGORA =======================
 
@@ -146,14 +159,14 @@ states:
         status: address_only
         access: address_only
         info_url: "https://www.danversma.gov/651/View-Issued-Permits"
-        notes: "OpenGov desde 30/05/2023, busca só por endereço. A cidade também publica um relatório mensal em PDF com valor da obra e requerente (alternativa possível)."
+        notes: "OpenGov desde 30/05/2023, busca só por endereço, e o robots.txt do OpenGov não permite coleta automática. A cidade também publica um relatório mensal em PDF com valor da obra e requerente (alternativa possível)."
 
       - name: Sudbury
         source_type: unknown
         status: address_only
         access: address_only
         info_url: "https://sudbury.ma.us/building/2020/08/26/search-building-department-permits-by-address/"
-        notes: "Pesquisa pública por endereço de permits emitidos."
+        notes: "Pesquisa por endereço no OpenGov (robots.txt não permite coleta automática)."
 
       - name: Revere
         source_type: unknown
@@ -167,75 +180,94 @@ states:
         status: login_required
         access: login_required
         info_url: "https://www.needhamma.gov/227/Building"
-        notes: "Instruções da prefeitura pedem login. Permits emitidos desde 18/03/2020 estão online."
+        notes: "Instruções da prefeitura pedem login; portal OpenGov (robots.txt não permite coleta). Permits emitidos desde 18/03/2020 estão online."
 
       - name: Northampton
         source_type: unknown
         status: planning_only
         access: planning_only
         info_url: "https://northamptonma.gov/938/Permits-Codes"
-        notes: "Planning & Sustainability: processos pendentes e concluídos; não equivale a building permits."
+        notes: "Planning & Sustainability (OpenGov): processos pendentes e concluídos; não equivale a building permits; robots.txt não permite coleta."
 
       # ======================= PDF: PLATAFORMA A IDENTIFICAR =======================
 
       - name: Watertown
-        source_type: unknown
-        status: to_investigate
+        source_type: opengov_portal
+        status: robots_blocked
         access: search_by_address_or_record
+        portal_url: "https://watertownma.viewpointcloud.com/"
         info_url: "https://www.watertown-ma.gov/code-enforcement-zoning-and-planning-search"
-        notes: "Histórico e status de building permits e processos de planejamento; sistema ainda não identificado."
+        notes: "OpenGov/ViewpointCloud: o robots.txt não permite coleta automática (verificado em 06/10/2026). Alternativas: relatórios que a cidade publique ou pedido formal de dados."
+
 
       - name: Hingham
-        source_type: unknown
-        status: to_investigate
+        source_type: permiteyes
+        status: needs_adapter
         access: search_by_address_or_record
+        portal_url: "https://permiteyes.us/hingham/publicview.php"
         info_url: "https://www.hingham-ma.gov/577/View"
-        notes: "Pesquisa pública de aplicações e permits emitidos; sistema ainda não identificado."
+        probe: true
+        notes: "PermitEyes Public View (robots.txt permite). Identificado pelo teste de saúde."
+
 
       - name: Attleboro
-        source_type: unknown
-        status: to_investigate
+        source_type: permiteyes
+        status: needs_adapter
         access: search_by_address_or_record
+        portal_url: "https://permiteyes.us/attleboro/publicview.php"
         info_url: "https://www.cityofattleboro.us/167/Building-Inspection"
-        notes: "Consulta pública online e arquivo eletrônico anterior; sistema ainda não identificado."
+        notes: "PermitEyes Public View (robots.txt permite). Identificado pelo teste de saúde; existe também o arquivo antigo (permiteyes.net)."
+
 
       # ======================= JÁ MAPEADAS ANTES (sem API pública) =======================
 
       - name: Springfield
         source_type: opengov_portal
-        status: needs_adapter
+        status: robots_blocked
         access: search_by_address_or_record
         portal_url: "https://springfieldma.portal.opengov.com/"
+        notes: "OpenGov/ViewpointCloud: o robots.txt não permite coleta automática (verificado em 06/10/2026). Alternativas: relatórios que a cidade publique ou pedido formal de dados."
+
 
       - name: New Bedford
         source_type: opengov_portal
-        status: needs_adapter
+        status: robots_blocked
         access: search_by_address_or_record
         portal_url: "https://newbedfordma.portal.opengov.com/"
+        notes: "OpenGov/ViewpointCloud: o robots.txt não permite coleta automática (verificado em 06/10/2026). Alternativas: relatórios que a cidade publique ou pedido formal de dados."
+
 
       - name: Haverhill
         source_type: opengov_portal
-        status: needs_adapter
+        status: robots_blocked
         access: search_by_address_or_record
         portal_url: "https://haverhillma.portal.opengov.com/"
+        notes: "OpenGov/ViewpointCloud: o robots.txt não permite coleta automática (verificado em 06/10/2026). Alternativas: relatórios que a cidade publique ou pedido formal de dados."
+
 
       - name: Quincy
         source_type: opengov_portal
-        status: needs_adapter
+        status: robots_blocked
         access: search_by_address_or_record
         portal_url: "https://quincyma.portal.opengov.com/"
+        notes: "OpenGov/ViewpointCloud: o robots.txt não permite coleta automática (verificado em 06/10/2026). Alternativas: relatórios que a cidade publique ou pedido formal de dados."
+
 
       - name: Gloucester
         source_type: opengov_portal
-        status: needs_adapter
+        status: robots_blocked
         access: search_by_address_or_record
         portal_url: "https://gloucesterma.portal.opengov.com/"
+        notes: "OpenGov/ViewpointCloud: o robots.txt não permite coleta automática (verificado em 06/10/2026). Alternativas: relatórios que a cidade publique ou pedido formal de dados."
+
 
       - name: Lexington
         source_type: opengov_portal
-        status: needs_adapter
+        status: robots_blocked
         access: search_by_address_or_record
         portal_url: "https://lexingtonma.portal.opengov.com/"
+        notes: "OpenGov/ViewpointCloud: o robots.txt não permite coleta automática (verificado em 06/10/2026). Alternativas: relatórios que a cidade publique ou pedido formal de dados."
+
 
       - name: Lowell
         source_type: munis_css
@@ -249,7 +281,7 @@ states:
         status: to_investigate
         access: open_data_api
         portal_url: "https://opendata-westspringfield.hub.arcgis.com/"
-        notes: "Portal de dados abertos ArcGIS; falta localizar a camada de permits."
+        notes: "Portal de dados abertos ArcGIS está no ar, mas não encontramos camada de permits na busca do ArcGIS Hub."
 
       # ======================= ENCONTRADAS NA PESQUISA (a confirmar) =======================
 
@@ -257,23 +289,29 @@ states:
         source_type: permiteyes
         status: needs_adapter
         access: search_by_address_or_record
-        portal_url: "https://permiteyes.us/taunton/loginuser.php"
+        portal_url: "https://permiteyes.us/taunton/publicview.php"
         info_url: "https://www.taunton-ma.gov/169/Online-Building-Permits"
-        notes: "Migrou do Accela para PermitEyes; a prefeitura diz que dá para pesquisar permits sem conta."
+        probe: true
+        notes: "PermitEyes Public View (robots.txt permite). Migrou do Accela para PermitEyes."
+
 
       - name: Falmouth
         source_type: permiteyes
         status: needs_adapter
         access: search_by_address_or_record
+        portal_url: "https://permiteyes.us/falmouth/publicview.php"
         info_url: "https://www.falmouthma.gov/313/Online-Permitting"
-        notes: "PermitEyes desde dez/2021, com Public View sem login."
+        notes: "PermitEyes Public View (robots.txt permite). Public View sem login."
+
 
       - name: Stockbridge
         source_type: permiteyes
         status: needs_adapter
         access: search_by_address_or_record
+        portal_url: "https://permiteyes.us/berkshire/publicview.php"
         info_url: "https://www.stockbridge-ma.gov/building-inspector/page/permiteyes-how"
-        notes: "PermitEyes (Berkshire), com Public View."
+        notes: "PermitEyes Public View (robots.txt permite). Região Berkshire."
+
 
       - name: Arlington
         source_type: unknown
