@@ -127,11 +127,23 @@ LIB_RE = re.compile(r"jquery|bootstrap|moment|fullcalendar|select2|datepicker|me
                     r"\.min\.js|google|maps|recaptcha|datatable|app\.js|layout|quick-sidebar|demo", re.I)
 
 
-def grep_js(code: str, label: str, limit: int = 40) -> list[str]:
-    out = []
-    for i, line in enumerate(code.splitlines()):
-        if KEY_LINE_RE.search(line):
-            out.append(f"{label}:{i + 1}: {line.strip()[:200]}")
+def grep_js(code: str, label: str, limit: int = 60) -> list[str]:
+    """Mostra o essencial do código da página: os blocos \"ajax\" (com as linhas seguintes) e os
+    parâmetros enviados (d.xxx = ...)."""
+    lines = code.splitlines()
+    out: list[str] = []
+    shown = set()
+    blocks = 0
+    for i, line in enumerate(lines):
+        if re.search(r"[\"']?ajax[\"']?\s*:\s*[{\"']", line, re.I) and blocks < 5:
+            blocks += 1
+            for k in range(i, min(i + 10, len(lines))):
+                if k not in shown:
+                    shown.add(k)
+                    out.append(f"{label}:{k + 1}: {lines[k].strip()[:170]}")
+        elif re.search(r"\bd\.\w+\s*=|getvalues|ajax/\w+\.php", line) and i not in shown:
+            shown.add(i)
+            out.append(f"{label}:{i + 1}: {line.strip()[:170]}")
         if len(out) >= limit:
             break
     return out
