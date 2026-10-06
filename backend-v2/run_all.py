@@ -5,9 +5,9 @@ uma mudança de configuração, não de código.
 
 status no registry.yaml:
     confirmed     -> roda e entra no dashboard e no e-mail
-    experimental  -> roda e mostra no log, mas NÃO entra no dashboard
-                     (até o log confirmar que os dados estão corretos).
-                     Para incluir mesmo assim: INCLUDE_EXPERIMENTAL=1
+    experimental  -> NÃO roda no diário; roda no teste de saúde (City Health Check)
+                     até os dados serem conferidos. Para rodar mesmo assim:
+                     INCLUDE_EXPERIMENTAL=1 ou --city NOME
     qualquer outro -> não roda (sem fonte automática viável ainda)
 
 Uso:
@@ -64,6 +64,10 @@ def run(states_filter: list[str] | None = None, days_back: int = 2,
             adapter_cls = ADAPTERS.get(source_type)
             if adapter_cls is None:
                 skipped.append({"city": city, "state": state_name, "reason": f"sem adapter para '{source_type}'"})
+                continue
+
+            if status == "experimental" and not include_experimental and not wanted:
+                skipped.append({"city": city, "state": state_name, "reason": "experimental (só roda no teste de saúde)"})
                 continue
 
             try:

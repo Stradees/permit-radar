@@ -124,7 +124,7 @@ def data_endpoints(url: str, html: str) -> list[str]:
 KEY_LINE_RE = re.compile(r"ajax|\$\.(?:post|get|ajax)|datatable|serverside|getpublic|getbuilding|getvalues|"
                          r"publicview|issue.?date|date.?from|date.?to|\burl\s*:", re.I)
 LIB_RE = re.compile(r"jquery|bootstrap|moment|fullcalendar|select2|datepicker|metronic|font-?awesome|"
-                    r"\.min\.js|google|maps|recaptcha", re.I)
+                    r"\.min\.js|google|maps|recaptcha|datatable|app\.js|layout|quick-sidebar|demo", re.I)
 
 
 def grep_js(code: str, label: str, limit: int = 40) -> list[str]:
@@ -156,20 +156,26 @@ def probe_permiteyes(url: str, endpoints: list[str]) -> list[str]:
             L += grep_js(js, full.split("/")[-1][:40])
         except Exception:  # noqa: BLE001
             pass
-    # Tentativas diretas nos endereços de dados (POST no estilo DataTables e GET)
-    tries = [e for e in endpoints if "/ajax/" in e or "getvalues" in e][:4]
-    body = {"draw": 1, "start": 0, "length": 5, "search[value]": ""}
-    for ep in tries:
-        for method in ("POST", "GET"):
+    # Tentativas diretas nos endereços de dados (POST no estilo DataTables)
+    tries = []
+    for e in endpoints + [urljoin(final, "ajax/getpublicview.php"), urljoin(final, "ajax/getbuildingpublichome.php")]:
+        if ("/ajax/" in e or "getvalues" in e) and e not in tries:
+            tries.append(e)
+    body = {"draw": 1, "start": 0, "length": 3, "search[value]": ""}
+    for ep in tries[:5]:
+        try:
+            r = requests.post(ep, headers=HEADERS, timeout=TIMEOUT, data=body)
             try:
-                r = requests.request(method, ep, headers=HEADERS, timeout=TIMEOUT,
-                                     data=body if method == "POST" else None)
-                snippet = " ".join(r.text[:350].split())
-                ctype = r.headers.get("content-type", "")[:40]
-                L.append(f"{method} {ep} -> HTTP {r.status_code} {ctype} :: {snippet}")
-            except Exception as e:  # noqa: BLE001
-                L.append(f"{method} {ep} -> erro {str(e)[:100]}")
-    return L[:90]
+                js = r.json()
+                rows = js.get("data", [])[:2]
+                clean = [[" ".join(re.sub(r"<[^>]+>", " ", str(c)).split()) for c in row] for row in rows]
+                L.append(f"POST {ep} -> HTTP {r.status_code}; recordsTotal={js.get('recordsTotal')}; linhas de exemplo: {clean}")
+            except Exception:  # noqa: BLE001
+                L.append(f"POST {ep} -> HTTP {r.status_code} {r.headers.get('content-type', '')[:30]} (sem JSON) :: "
+                         f"{' '.join(r.text[:150].split())}")
+        except Exception as e:  # noqa: BLE001
+            L.append(f"POST {ep} -> erro {str(e)[:100]}")
+    return L[:60]
 
 
 def check_city(cfg: dict) -> dict:
@@ -215,24 +221,27 @@ def check_city(cfg: dict) -> dict:
         if target:
             res["probe"] = {"url": target, "lines": probe_permiteyes(target, res["endpoints"])}
 
-    # Coleta de teste (cidades com adaptador)
-    if status in ("confirmed", "experimental") and cfg.get("source_type") in ADAPTERS:
-        try:
-            ad = ADAPTERS[cfg["source_type"]](city=name, state="massachusetts", config=cfg.get("config", {}),
-                                              field_map=cfg.get("field_map", {}), source_link=cfg.get("source_link", ""))
-            buf = io.StringIO()
-            with contextlib.redirect_stdout(buf):
-                rows = ad.fetch(days_back=14)
-            res["dry_log"] = [ln for ln in buf.getvalue().splitlines() if ln.strip()][:25]
-            sample = rows[0] if rows else None
-            res["dry"] = {"ok": True, "count": len(rows),
-                          "sample": ({k: sample.get(k) for k in ("permit_number", "address", "permit_type",
-                                                                 "category", "estimated_value", "contractor",
-                                                                 "issue_date")} if sample else None)}
-        except Exception as e:  # noqa: BLE001
-            res["dry"] = {"ok": False, "error": str(e)[:300]}
-            res["dry_log"] = [ln for ln in buf.getvalue().splitlines() if ln.strip()][:25] if "buf" in dir() else []
     return res
+
+
+def dry_run(cfg: dict) -> dict:
+    """Coleta de teste de uma cidade com adaptador; captura as mensagens do adaptador."""
+    out = {"dry": None, "dry_log": []}
+    buf = io.StringIO()
+    try:
+        ad = ADAPTERS[cfg["source_type"]](city=cfg["name"], state="massachusetts", config=cfg.get("config", {}),
+                                          field_map=cfg.get("field_map", {}), source_link=cfg.get("source_link", ""))
+        with contextlib.redirect_stdout(buf):
+            rows = ad.fetch(days_back=14)
+        sample = rows[0] if rows else None
+        out["dry"] = {"ok": True, "count": len(rows),
+                      "sample": ({k: sample.get(k) for k in ("permit_number", "address", "permit_type", "category",
+                                                             "estimated_value", "contractor", "issue_date")}
+                                 if sample else None)}
+    except Exception as e:  # noqa: BLE001
+        out["dry"] = {"ok": False, "error": str(e)[:300]}
+    out["dry_log"] = [ln for ln in buf.getvalue().splitlines() if ln.strip()][:25]
+    return out
 
 
 def render(results: list[dict]) -> str:
@@ -297,6 +306,15 @@ def main():
 
     with ThreadPoolExecutor(max_workers=6) as pool:
         results = list(pool.map(check_city, cities))
+
+    # Coletas de teste, uma de cada vez (para as mensagens não se misturarem)
+    by_name = {c["name"]: c for c in cities}
+    for r in results:
+        cfg = by_name[r["name"]]
+        if cfg.get("status") in ("confirmed", "experimental") or (
+                cfg.get("source_type") == "permiteyes" and cfg.get("config")):
+            if cfg.get("source_type") in ADAPTERS:
+                r.update(dry_run(cfg))
 
     report = render(results)
     REPORT_PATH.write_text(report, encoding="utf-8")
