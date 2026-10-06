@@ -1,0 +1,32 @@
+name: City Health Check
+
+on:
+  workflow_dispatch: {}   # só roda quando você aperta "Run workflow"
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependências
+        run: pip install -r backend-v2/requirements.txt
+
+      - name: Testar todas as cidades
+        working-directory: backend-v2
+        run: python check_cities.py
+
+      - name: Salvar o relatório
+        run: |
+          git config user.name "permit-radar-bot"
+          git config user.email "bot@permitradar.local"
+          git add backend-v2/health_report.md
+          git diff --quiet --cached || git commit -m "Relatório de saúde das cidades"
+          git push
