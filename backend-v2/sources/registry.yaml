@@ -73,7 +73,7 @@ states:
 
       - name: Reading
         source_type: file_report
-        status: experimental
+        status: confirmed
         access: file_report
         config:
           index_url: "https://www.readingma.gov/959/Monthly-Building-Permit-Report"
@@ -88,7 +88,7 @@ states:
         source_link: "https://www.readingma.gov/959/Monthly-Building-Permit-Report"
         info_url: "https://www.readingma.gov/959/Monthly-Building-Permit-Report"
         portal_url: "https://readingma.portal.opengov.com/"
-        notes: "Relatório mensal em Excel; robots.txt de readingma.gov permite. Colunas reais conferidas em 06/10 (record, full_address, date_issued, project_cost, dba...). Sem construtor próprio: usa dba/requerente. O portal OpenGov deles não permite coleta."
+        notes: "Relatório mensal em Excel; robots.txt de readingma.gov permite. Testada ao vivo em 06/10 (90 permits em 45 dias) (record, full_address, date_issued, project_cost, dba...). Sem construtor próprio: usa dba/requerente. O portal OpenGov deles não permite coleta."
 
       # ======================= PDF: PRECISAM DE ADAPTADOR DE PLATAFORMA =======================
 
@@ -138,6 +138,7 @@ states:
           max_pages: 5
         field_map: {}
         source_link: "https://permiteyes.us/concord/publicview.php"
+        probe: true
         notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Building permits emitidos desde 01/01/2021."
 
 
@@ -154,6 +155,7 @@ states:
           max_pages: 5
         field_map: {}
         source_link: "https://permiteyes.us/mansfield/publicview.php"
+        probe: true
         notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Página do PermitEyes confirmada (HTTP 200); o site da prefeitura bloqueia acesso automático."
 
 
@@ -269,6 +271,7 @@ states:
           max_pages: 5
         field_map: {}
         source_link: "https://permiteyes.us/attleboro/publicview.php"
+        probe: true
         notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Existe também o arquivo antigo (permiteyes.net)."
 
 

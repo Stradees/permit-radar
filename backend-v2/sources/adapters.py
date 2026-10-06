@@ -5,7 +5,7 @@ Cada cidade vira só uma entrada em registry.yaml. Os adapters sabem conversar
 com a plataforma (CKAN, Socrata, ArcGIS) e traduzem os campos de cada cidade
 para o formato padrão do Permit Radar.
 
-Versão 2.6 (PermitEyes e Reading): Worcester (ArcGIS) e relatórios em arquivo; filtra permits de especialidade, classifica o tipo de obra
+Versão 2.7 (PermitEyes com alinhamento de colunas): Worcester (ArcGIS) e relatórios em arquivo; filtra permits de especialidade, classifica o tipo de obra
 (New Construction / Addition / Renovation / Demolition) e descobre colunas sozinho.
 Para ver colunas e tipos de permit no log, defina PERMIT_DEBUG=1.
 """
@@ -55,7 +55,7 @@ DEFAULT_CANDIDATES = {
 }
 
 ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}")
-EMPTY_VALUES = {"n/a", "na", "none", "null", "-", "--", "unknown", ""}
+EMPTY_VALUES = {"n/a", "na", "none", "null", "-", "--", "unknown", "user", ""}
 
 
 # ---------------------------------------------------------------------------
@@ -66,12 +66,16 @@ EMPTY_VALUES = {"n/a", "na", "none", "null", "-", "--", "unknown", ""}
 INCLUDE_TYPE_RE = re.compile(
     r"(building|bldg|short form|long form|erect|new construction|foundation|alteration|"
     r"addition|demolition|remodel|renovation|construction|roof|siding|residential|commercial|"
-    r"deck|accessory|adu|garage|carport|restore after fire)", re.I)
+    r"deck|accessory|adu|garage|carport|restore after fire|resi|comm\b|bldg|demo)", re.I)
 EXCLUDE_TYPE_RE = re.compile(
     r"\b(amendment|certificate|electrical|plumbing|gas|mechanical|sheet metal|fire alarms?|"
     r"low voltage|sprinkler|signs?|occupancy|excavation|asbestos|tents?|dumpster|food|tobacco|"
     r"insulation|stove|antenna|zoning|crowd|carnival|billboard|turbine|pool|fence|retaining|"
-    r"shed|change of use|temporary|moving)\b", re.I)
+    r"shed|change of use|temporary|moving)\b|plumb|elec\b|elec\.|sheet|chim\.", re.I)
+DESC_INCLUDE_RE = re.compile(
+    r"\b(roof\w*|re-?roof\w*|siding|addition|deck|remodel\w*|renovat\w*|demoli\w*|garage|foundation|"
+    r"porch|sunroom|dormer|kitchen|bath\w*|windows?|new (?:single|two|three|multi|dwelling|home|house|building|construction)|"
+    r"build\w* (?:a|an|new)|construct\w*)\b", re.I)
 EVENT_DESC_RE = re.compile(r"\b(tents?|beer garden|festival|one day event|1 day event)\b", re.I)
 
 NEW_CONSTRUCTION_DESC_RE = re.compile(
@@ -90,7 +94,9 @@ def is_relevant(permit_type, description=None) -> bool:
         if EXCLUDE_TYPE_RE.search(t):
             return False
         if not INCLUDE_TYPE_RE.search(t):
-            return False
+            # tipo desconhecido (ex.: siglas de cada cidade): a descrição do serviço decide
+            if not (description and DESC_INCLUDE_RE.search(description)):
+                return False
     if description and EVENT_DESC_RE.search(description):
         return False
     return True
@@ -575,11 +581,15 @@ class PermitEyesAdapter(BaseAdapter):
     A tela pública é uma tabela DataTables que pede os dados em ajax/<arquivo>.php. Este adaptador:
       1. abre a página pública e lê os nomes das colunas (que variam de cidade para cidade);
       2. acha o endereço de dados que responde em JSON;
-      3. descobre se os registros mais novos ficam no começo ou no fim da lista;
-      4. busca poucas páginas a partir do lado mais novo e traduz as colunas.
+      3. alinha as colunas com as células (alguns cabeçalhos não têm dado, ex.: Taunton);
+      4. descobre se os registros mais novos ficam no começo ou no fim da lista;
+      5. busca poucas páginas a partir do lado mais novo e traduz as colunas.
     Config: portal_url, ajax_urls (opcional), page_size, max_pages, newest_at ("start"/"end")."""
 
     DEFAULT_ENDPOINTS = ["ajax/getpublicview.php", "ajax/getbuildingpublichome.php"]
+    ACTION_KEYS = {"application", "permit", "inspection", "app", "insp", "coc", "att", "co", "sign_off", "details"}
+    _DATE = re.compile(r"^\d{1,2}[/-]\d{1,2}[/-]\d{2,4}")
+    _MONEY = re.compile(r"^\$?[\d,]+(\.\d+)?$")
 
     @staticmethod
     def _clean(cell) -> str:
@@ -602,14 +612,20 @@ class PermitEyesAdapter(BaseAdapter):
         best = [h for h in tables.values() if any("issue" in x.lower() for x in h)]
         return max(best, key=len) if best else []
 
+    def _session(self, view_url: str):
+        sess = requests.Session()
+        sess.headers.update(HEADERS)
+        sess.headers.update({"X-Requested-With": "XMLHttpRequest", "Referer": view_url})
+        return sess
+
     def _post(self, url: str, start: int, length: int) -> dict:
         data = {"draw": 1, "start": start, "length": length, "search[value]": ""}
         last = None
         for attempt in range(3):
             try:
-                resp = requests.post(url, data=data, headers=HEADERS, timeout=60)
+                resp = self.sess.post(url, data=data, timeout=60)
                 if resp.status_code >= 400:
-                    raise RuntimeError(f"HTTP {resp.status_code}")
+                    raise RuntimeError(f"HTTP {resp.status_code} :: {' '.join(resp.text[:100].split())}")
                 js = resp.json()
                 if not isinstance(js, dict) or "data" not in js:
                     raise RuntimeError("resposta sem o campo data")
@@ -617,15 +633,71 @@ class PermitEyesAdapter(BaseAdapter):
             except Exception as e:  # noqa: BLE001
                 last = e
                 time.sleep(2 * (attempt + 1))
-        raise RuntimeError(f"{url}: {last}")
+        raise RuntimeError(f"{last}")
 
-    def _to_dicts(self, rows: list, heads: list[str]) -> list[dict]:
-        keys = [_norm_header(h) or f"col{i}" for i, h in enumerate(heads)]
+    # ---- alinhamento das colunas ----
+    def _plausible(self, key: str, cell: str) -> float:
+        if not cell:
+            return 0.2 if key in self.ACTION_KEYS else 0.0
+        if key in self.ACTION_KEYS:
+            return -0.5
+        if "date" in key:
+            return 1.0 if self._DATE.match(cell) else -1.5
+        if "cost" in key or "valu" in key:
+            return 1.0 if self._MONEY.match(cell) else -1.5
+        if key == "ap_no":
+            return 1.0 if cell.isdigit() else -1.0
+        if "permit_number" in key:
+            return 1.0 if re.match(r"^[A-Za-z]{1,6}[-\s]?\d", cell) else -1.0
+        if "status" in key:
+            return 1.0 if re.fullmatch(r"[A-Za-z .-]{3,20}", cell) else -1.0
+        if key == "site_address":
+            return 1.0 if re.match(r"^\d+\s*\w", cell) else -0.5
+        if key == "street_no":
+            return 0.5 if re.match(r"^\d+\w?$", cell) else -0.5
+        if key in ("applicant", "owner", "contractor_name"):
+            return -1.0 if (self._DATE.match(cell) or self._MONEY.match(cell)) else 0.0
+        return 0.0
+
+    def _build_alignment(self, keys: list[str], sample_rows: list[list[str]]) -> list[str | None]:
+        """Devolve, para cada célula, o nome da coluna (ou None). Testa quais cabeçalhos não têm dado."""
+        from itertools import combinations
+        sample_rows = [r for r in sample_rows if r]
+        if not sample_rows:
+            return list(keys)
+        counts: dict[int, int] = {}
+        for r in sample_rows:
+            counts[len(r)] = counts.get(len(r), 0) + 1
+        n_cells = max(counts, key=counts.get)
+        H = len(keys)
+        if n_cells == H:
+            return list(keys)
+        if n_cells > H:
+            return [None] * (n_cells - H) + list(keys)
+        d = H - n_cells
+        if d > 3:
+            return list(keys[H - n_cells:])
+        rows = [r for r in sample_rows if len(r) == n_cells][:40]
+        best, best_score = None, None
+        for omit in combinations(range(H), d):
+            kept = [k for i, k in enumerate(keys) if i not in omit]
+            score = sum(self._plausible(k, c) for r in rows for k, c in zip(kept, r))
+            if best_score is None or score > best_score:
+                best, best_score = kept, score
+        print(f"[info] {self.city}: {H} cabeçalhos para {n_cells} células; cabeçalhos sem dado: "
+              f"{[k for k in keys if k not in best]}")
+        return best
+
+    def _to_dicts(self, rows: list, keys: list[str], aligned: list) -> list[dict]:
         out = []
         for r in rows:
             cells = [self._clean(c) for c in r]
-            n = min(len(cells), len(keys))
-            d = {k: v for k, v in zip(keys[len(keys) - n:], cells[len(cells) - n:]) if v}
+            if len(cells) == len(aligned):
+                pairs = zip(aligned, cells)
+            else:
+                n = min(len(cells), len(keys))
+                pairs = zip(keys[len(keys) - n:], cells[len(cells) - n:])
+            d = {k: v for k, v in pairs if k and v}
             if "site_address" not in d and (d.get("street_no") or d.get("street_name")):
                 d["site_address"] = f"{d.get('street_no', '')} {d.get('street_name', '')}".strip()
             out.append(d)
@@ -639,7 +711,11 @@ class PermitEyesAdapter(BaseAdapter):
         view_url = self.config["portal_url"]
         if not robots_allows(view_url):
             raise RuntimeError("o robots.txt não permite coleta automática desta página")
-        page = _http_get(view_url).text
+        self.sess = self._session(view_url)
+        resp = self.sess.get(view_url, timeout=60)
+        if resp.status_code >= 400:
+            raise RuntimeError(f"HTTP {resp.status_code} ao abrir a página pública")
+        page = resp.text
         tables = self._tables(page)
 
         endpoints = list(self.config.get("ajax_urls") or self.DEFAULT_ENDPOINTS)
@@ -648,31 +724,43 @@ class PermitEyesAdapter(BaseAdapter):
                 endpoints.append(ep)
 
         url = js0 = None
+        tried = []
         for ep in endpoints:
             full = urljoin(view_url, ep)
             try:
-                js0 = self._post(full, 0, 1)
-            except Exception:  # noqa: BLE001
+                js0 = self._post(full, 0, 25)
+            except Exception as e:  # noqa: BLE001
+                tried.append(f"{ep} -> {e}")
                 continue
             if js0.get("data") or js0.get("recordsTotal"):
                 url = full
                 break
+            tried.append(f"{ep} -> vazio")
         if not url:
-            raise RuntimeError(f"nenhum endereço de dados respondeu (tentados: {endpoints})")
+            for t in tried[:8]:
+                print(f"[info] {self.city}: tentativa {t}")
+            raise RuntimeError(f"nenhum endereço de dados respondeu ({len(tried)} tentativas; veja as mensagens)")
 
         heads = self._pick_headers(tables, url)
         print(f"[info] {self.city}: endereço de dados {url.split('/')[-1]}; colunas: {heads}")
         if not heads:
             raise RuntimeError("não encontrei os nomes das colunas na página")
+        keys = [_norm_header(h) or f"col{i}" for i, h in enumerate(heads)]
 
         total = int(str(js0.get("recordsTotal") or js0.get("recordsFiltered") or len(js0.get("data", []))).replace(",", "") or 0)
-        first = self._to_dicts(js0.get("data", []), heads)
+        sample = [[self._clean(c) for c in r] for r in js0.get("data", [])]
+        last_js = None
         newest_at = self.config.get("newest_at")
+        if total > 25:
+            last_js = self._post(url, max(total - 25, 0), 25)
+            sample += [[self._clean(c) for c in r] for r in last_js.get("data", [])]
+        aligned = self._build_alignment(keys, sample)
+
+        first = self._to_dicts(js0.get("data", []), keys, aligned)
         if not newest_at:
-            last_js = self._post(url, max(total - 1, 0), 1) if total > 1 else js0
-            last = self._to_dicts(last_js.get("data", []), heads)
+            last = self._to_dicts(last_js.get("data", []), keys, aligned) if last_js else first
             d_first = self._row_date(first[0]) if first else ""
-            d_last = self._row_date(last[0]) if last else ""
+            d_last = self._row_date(last[-1]) if last else ""
             newest_at = "end" if d_last > d_first else "start"
             print(f"[info] {self.city}: {total} registros; data no início={d_first or '?'}, no fim={d_last or '?'}; mais novos no {newest_at}")
         if first:
@@ -681,8 +769,7 @@ class PermitEyesAdapter(BaseAdapter):
         since = (date.today() - timedelta(days=days_back)).isoformat()
         size = int(self.config.get("page_size", 100))
         rows: list[dict] = []
-        pos_end = total
-        pos_start = 0
+        pos_end, pos_start = total, 0
         for _ in range(int(self.config.get("max_pages", 6))):
             if newest_at == "start":
                 st, length = pos_start, min(size, max(total - pos_start, 1))
@@ -697,7 +784,7 @@ class PermitEyesAdapter(BaseAdapter):
                 size = len(got)
                 if newest_at == "end":
                     continue
-            batch = self._to_dicts(got, heads)
+            batch = self._to_dicts(got, keys, aligned)
             rows += batch
             if not got:
                 break
@@ -713,6 +800,15 @@ class PermitEyesAdapter(BaseAdapter):
                 if pos_end <= 0:
                     break
             time.sleep(1)
+
+        # Diagnóstico: quais tipos (siglas) a cidade usa nos registros lidos
+        tcount: dict[str, int] = {}
+        for r in rows:
+            t = self._pick(r, "permit_type")
+            if t:
+                tcount[str(t)] = tcount.get(str(t), 0) + 1
+        top = sorted(tcount.items(), key=lambda kv: -kv[1])[:14]
+        print(f"[info] {self.city}: tipos nas {len(rows)} linhas lidas: {top}")
         return rows
 
     def fetch(self, days_back: int = 2) -> list[dict]:
