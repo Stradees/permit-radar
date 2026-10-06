@@ -1,21 +1,28 @@
 # registry.yaml — cadastro central de cidades/estados cobertos pelo Permit Radar.
 #
-# status:
-#   confirmed           -> pronto pra rodar em produção
-#   needs_field_mapping -> fonte existe, falta confirmar campos
-#   no_public_api       -> plataforma sem API pública (Accela / OpenGov / MUNIS)
+# status (o que o robozinho faz com a cidade):
+#   confirmed     -> testada ao vivo; entra no dashboard e no e-mail
+#   experimental  -> adaptador pronto, mas ainda sem confirmação dos dados; roda e aparece no log
+#   needs_adapter -> fonte pública sem login, falta construir/ligar o adaptador da plataforma
+#   to_investigate-> existe consulta online, plataforma ainda não identificada
+#   address_only  -> só dá para consultar por endereço (não serve para listar permits novos)
+#   login_required-> exige cadastro/login (não automatizamos)
+#   planning_only -> só processos de planejamento/zoneamento
 #
-# field_map: só precisa listar o que for diferente do padrão. Um campo pode ter uma
-# lista de alternativas, ex.: contractor: [contractor, applicant] (usa o primeiro que existir).
+# access: open_data_api | file_report | search_by_address_or_record | address_only | login_required | planning_only
+# field_map: só precisa listar o que for diferente do padrão (aceita listas de alternativas).
 
 states:
 
   massachusetts:
     cities:
 
+      # ======================= CONFIRMADAS (testadas ao vivo) =======================
+
       - name: Boston
         source_type: ckan
         status: confirmed
+        access: open_data_api
         config:
           base_url: "https://data.boston.gov/api/3/action/datastore_search_sql"
           resource_id: "6ddcd912-32a0-43df-9908-63574f8c7e77"
@@ -31,11 +38,12 @@ states:
           applicant: applicant
           # Boston não publica o campo "contractor"; o "applicant" costuma ser quem executa a obra.
           contractor: [contractor, applicant]
-        source_link: "https://www.boston.gov/departments/inspectional-services"
+        source_link: "https://www.boston.gov/boston-permitting"
 
       - name: Cambridge
         source_type: socrata
         status: confirmed
+        access: open_data_api
         config:
           domain: "data.cambridgema.gov"
           datasets:
@@ -45,62 +53,269 @@ states:
         source_link: "https://www.cambridgema.gov/departments/opendata"
 
       - name: Worcester
-        source_type: arcgis
-        status: needs_field_mapping
+        source_type: arcgis_query
+        status: confirmed
+        access: open_data_api
         config:
-          geojson_url: "https://opendata.arcgis.com/datasets/c2309c7a5f0a491d88aac4a80602e5aa_0.geojson"
-        field_map: {}
-        source_link: "https://opendata.worcesterma.gov/datasets/building-permits/explore"
+          service_url: "https://services1.arcgis.com/j8dqo2DJE7mVUBU1/arcgis/rest/services/Building_Permits/FeatureServer/0"
+          order_by: "ObjectId ASC"     # o registro mais novo vem primeiro
+          page_size: 1000
+          max_pages: 2
+          # Desde ~mai/2026 a cidade deixou de informar o tipo em ~95% dos permits novos ("N/A").
+          unknown_type_label: "Building Permit (type not listed)"
+        field_map:
+          description: occupancy_type  # ex.: "1 or 2 Family Dwelling"
+        source_link: "https://www.worcesterma.gov/inspections/permit-history"
+        notes: "Sem valor da obra. Desde ~mai/2026 tipo e contratante quase sempre vêm como N/A (limite da fonte). Servidor limita consultas (o código espera e repete)."
 
-      - name: West Springfield
-        source_type: arcgis
-        status: needs_field_mapping
+      # ======================= EM TESTE (adaptador pronto) =======================
+
+      - name: Reading
+        source_type: file_report
+        status: experimental
+        access: file_report
         config:
-          geojson_url: ""
+          index_url: "https://www.readingma.gov/959/Monthly-Building-Permit-Report"
+          link_regex: 'DocumentCenter/View/\d+'
+          link_text_regex: "Building Permits Issued"
+          max_files: 2
+          min_days_back: 45
         field_map: {}
-        source_link: "https://opendata-westspringfield.hub.arcgis.com/"
+        source_link: "https://www.readingma.gov/959/Monthly-Building-Permit-Report"
+        portal_url: "https://readingma.portal.opengov.com/"
+        notes: "Relatório mensal em Excel (confirmado). Colunas ainda não vistas: o primeiro log mostra os nomes reais."
 
-      # ---- Cidades sem API pública (precisam de outra abordagem) ----
+      # ======================= PDF: PRECISAM DE ADAPTADOR DE PLATAFORMA =======================
+
+      - name: Newton
+        source_type: opengov_portal
+        status: needs_adapter
+        access: search_by_address_or_record
+        portal_url: "https://newtonma.viewpointcloud.com/search"
+        info_url: "https://www.newtonma.gov/government/inspectional-services"
+        notes: "OpenGov/ViewpointCloud (NewGov). Consulta sem login por endereço ou número do registro; os detalhes trazem escopo e contratante."
+
+      - name: Brookline
+        source_type: accela
+        status: needs_adapter
+        access: search_by_address_or_record
+        portal_url: "https://aca-prod.accela.com/BROOKLINE/Welcome.aspx?TabName=Home"
+        info_url: "https://brooklinema.teamdynamix.com/TDClient/101/Portal/KB/Article/17096/ACCELA-Searching-for-Records"
+        notes: "Accela Citizen Access. Pesquisa por número, endereço ou nome."
+
+      - name: North Reading
+        source_type: permiteyes
+        status: needs_adapter
+        access: search_by_address_or_record
+        info_url: "https://www.northreadingma.gov/210/Project-Updates"
+        notes: "PermitEyes Public View (permits ativos desde set/2019)."
+
+      - name: Concord
+        source_type: permiteyes
+        status: needs_adapter
+        access: search_by_address_or_record
+        info_url: "https://www.concordma.gov/589/Building-Permit-Information"
+        notes: "PermitEyes Public View: building permits emitidos desde 01/01/2021."
+
+      - name: Mansfield
+        source_type: permiteyes
+        status: needs_adapter
+        access: search_by_address_or_record
+        info_url: "https://www.mansfieldma.com/156/Building-Department"
+        notes: "PermitEyes Public View."
+
+      - name: Pittsfield
+        source_type: permiteyes
+        status: needs_adapter
+        access: search_by_address_or_record
+        info_url: "https://www.pittsfieldma.gov/226/Public-View---Permit-Records"
+        notes: "PermitEyes Public View: registros desde 1985; busca por número e rua."
+
+      - name: Great Barrington
+        source_type: permiteyes
+        status: needs_adapter
+        access: search_by_address_or_record
+        portal_url: "https://permiteyes.us/berkshire/greatbarringtonpublicview.php"
+        info_url: "https://greatbarringtonma.civicpluswebopen.com/building-department/pages/online-permitting"
+        notes: "PermitEyes Public View confirmado: colunas Issue Date, Applicant, tipo e status; a tabela carrega por script (endereço de dados a descobrir)."
+
+      # ======================= PDF: SEM FEED UTILIZÁVEL AGORA =======================
+
+      - name: Danvers
+        source_type: opengov_portal
+        status: address_only
+        access: address_only
+        info_url: "https://www.danversma.gov/651/View-Issued-Permits"
+        notes: "OpenGov desde 30/05/2023, busca só por endereço. A cidade também publica um relatório mensal em PDF com valor da obra e requerente (alternativa possível)."
+
+      - name: Sudbury
+        source_type: unknown
+        status: address_only
+        access: address_only
+        info_url: "https://sudbury.ma.us/building/2020/08/26/search-building-department-permits-by-address/"
+        notes: "Pesquisa pública por endereço de permits emitidos."
+
+      - name: Revere
+        source_type: unknown
+        status: login_required
+        access: login_required
+        info_url: "https://www.revere.org/departments/building-division"
+        notes: "Exige cadastro/login para pesquisar. Não automatizamos."
+
+      - name: Needham
+        source_type: unknown
+        status: login_required
+        access: login_required
+        info_url: "https://www.needhamma.gov/227/Building"
+        notes: "Instruções da prefeitura pedem login. Permits emitidos desde 18/03/2020 estão online."
+
+      - name: Northampton
+        source_type: unknown
+        status: planning_only
+        access: planning_only
+        info_url: "https://northamptonma.gov/938/Permits-Codes"
+        notes: "Planning & Sustainability: processos pendentes e concluídos; não equivale a building permits."
+
+      # ======================= PDF: PLATAFORMA A IDENTIFICAR =======================
+
+      - name: Watertown
+        source_type: unknown
+        status: to_investigate
+        access: search_by_address_or_record
+        info_url: "https://www.watertown-ma.gov/code-enforcement-zoning-and-planning-search"
+        notes: "Histórico e status de building permits e processos de planejamento; sistema ainda não identificado."
+
+      - name: Hingham
+        source_type: unknown
+        status: to_investigate
+        access: search_by_address_or_record
+        info_url: "https://www.hingham-ma.gov/577/View"
+        notes: "Pesquisa pública de aplicações e permits emitidos; sistema ainda não identificado."
+
+      - name: Attleboro
+        source_type: unknown
+        status: to_investigate
+        access: search_by_address_or_record
+        info_url: "https://www.cityofattleboro.us/167/Building-Inspection"
+        notes: "Consulta pública online e arquivo eletrônico anterior; sistema ainda não identificado."
+
+      # ======================= JÁ MAPEADAS ANTES (sem API pública) =======================
 
       - name: Springfield
         source_type: opengov_portal
-        status: no_public_api
+        status: needs_adapter
+        access: search_by_address_or_record
         portal_url: "https://springfieldma.portal.opengov.com/"
 
       - name: New Bedford
         source_type: opengov_portal
-        status: no_public_api
+        status: needs_adapter
+        access: search_by_address_or_record
         portal_url: "https://newbedfordma.portal.opengov.com/"
 
       - name: Haverhill
         source_type: opengov_portal
-        status: no_public_api
+        status: needs_adapter
+        access: search_by_address_or_record
         portal_url: "https://haverhillma.portal.opengov.com/"
-
-      - name: Brookline
-        source_type: accela
-        status: no_public_api
-        portal_url: "https://aca-prod.accela.com/"
-
-      - name: Lowell
-        source_type: munis_css
-        status: no_public_api
-        portal_url: "https://www.lowellma.gov/1631/Online-Permitting"
 
       - name: Quincy
         source_type: opengov_portal
-        status: no_public_api
+        status: needs_adapter
+        access: search_by_address_or_record
         portal_url: "https://quincyma.portal.opengov.com/"
 
       - name: Gloucester
         source_type: opengov_portal
-        status: no_public_api
+        status: needs_adapter
+        access: search_by_address_or_record
         portal_url: "https://gloucesterma.portal.opengov.com/"
 
       - name: Lexington
         source_type: opengov_portal
-        status: no_public_api
+        status: needs_adapter
+        access: search_by_address_or_record
         portal_url: "https://lexingtonma.portal.opengov.com/"
+
+      - name: Lowell
+        source_type: munis_css
+        status: to_investigate
+        access: search_by_address_or_record
+        portal_url: "https://www.lowellma.gov/1631/Online-Permitting"
+        notes: "MUNIS Citizen Self Service (Tyler). O site menciona relatórios mensais mediante solicitação."
+
+      - name: West Springfield
+        source_type: arcgis
+        status: to_investigate
+        access: open_data_api
+        portal_url: "https://opendata-westspringfield.hub.arcgis.com/"
+        notes: "Portal de dados abertos ArcGIS; falta localizar a camada de permits."
+
+      # ======================= ENCONTRADAS NA PESQUISA (a confirmar) =======================
+
+      - name: Taunton
+        source_type: permiteyes
+        status: needs_adapter
+        access: search_by_address_or_record
+        portal_url: "https://permiteyes.us/taunton/loginuser.php"
+        info_url: "https://www.taunton-ma.gov/169/Online-Building-Permits"
+        notes: "Migrou do Accela para PermitEyes; a prefeitura diz que dá para pesquisar permits sem conta."
+
+      - name: Falmouth
+        source_type: permiteyes
+        status: needs_adapter
+        access: search_by_address_or_record
+        info_url: "https://www.falmouthma.gov/313/Online-Permitting"
+        notes: "PermitEyes desde dez/2021, com Public View sem login."
+
+      - name: Stockbridge
+        source_type: permiteyes
+        status: needs_adapter
+        access: search_by_address_or_record
+        info_url: "https://www.stockbridge-ma.gov/building-inspector/page/permiteyes-how"
+        notes: "PermitEyes (Berkshire), com Public View."
+
+      - name: Arlington
+        source_type: unknown
+        status: to_investigate
+        access: search_by_address_or_record
+        notes: "Listada em diretório público: busca por endereço, descrição, proprietário, contratante, data e tipo. Confirmar no site."
+
+      - name: Weston
+        source_type: unknown
+        status: to_investigate
+        access: search_by_address_or_record
+        notes: "Listada em diretório público: busca por período e tipo de permit. Confirmar no site."
+
+      - name: Westford
+        source_type: unknown
+        status: to_investigate
+        access: search_by_address_or_record
+        notes: "Listada em diretório público: busca por endereço, lote, requerente ou proprietário."
+
+      - name: Milton
+        source_type: unknown
+        status: to_investigate
+        access: search_by_address_or_record
+        notes: "Listada em diretório público: status por endereço, data, tipo ou requerente."
+
+      - name: Cohasset
+        source_type: unknown
+        status: to_investigate
+        access: file_report
+        notes: "Listada em diretório público: registros mensais de permits desde 2009."
+
+      - name: Holland
+        source_type: unknown
+        status: to_investigate
+        access: file_report
+        notes: "Listada em diretório público: lista recente de permits emitidos."
+
+      - name: Ludlow
+        source_type: unknown
+        status: to_investigate
+        access: file_report
+        notes: "Listada em diretório público: relatórios mensais de permits emitidos."
 
   # Próximo estado: mesma estrutura, ativar quando formos expandir.
   # new_york:
