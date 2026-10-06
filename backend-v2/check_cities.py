@@ -17,6 +17,8 @@ Uso:
 """
 
 import argparse
+import contextlib
+import io
 import re
 import urllib.robotparser as robotparser
 from concurrent.futures import ThreadPoolExecutor
@@ -119,6 +121,57 @@ def data_endpoints(url: str, html: str) -> list[str]:
     return found[:12]
 
 
+KEY_LINE_RE = re.compile(r"ajax|\$\.(?:post|get|ajax)|datatable|serverside|getpublic|getbuilding|getvalues|"
+                         r"publicview|issue.?date|date.?from|date.?to|\burl\s*:", re.I)
+LIB_RE = re.compile(r"jquery|bootstrap|moment|fullcalendar|select2|datepicker|metronic|font-?awesome|"
+                    r"\.min\.js|google|maps|recaptcha", re.I)
+
+
+def grep_js(code: str, label: str, limit: int = 40) -> list[str]:
+    out = []
+    for i, line in enumerate(code.splitlines()):
+        if KEY_LINE_RE.search(line):
+            out.append(f"{label}:{i + 1}: {line.strip()[:200]}")
+        if len(out) >= limit:
+            break
+    return out
+
+
+def probe_permiteyes(url: str, endpoints: list[str]) -> list[str]:
+    """Mostra como a tela pública do PermitEyes pede os dados (para construirmos o leitor)."""
+    L: list[str] = []
+    code, final, html, err = fetch(url)
+    if not html:
+        return [f"não consegui abrir {url}: HTTP {code} {err or ''}"]
+    inline = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", html, re.I | re.S)
+    for n, block in enumerate(inline):
+        L += grep_js(block, f"script-inline-{n + 1}")
+    host = urlparse(final).netloc
+    for src in re.findall(r"<script[^>]+src=[\"']([^\"']+)[\"']", html, re.I)[:30]:
+        full = urljoin(final, src)
+        if urlparse(full).netloc != host or LIB_RE.search(full):
+            continue
+        try:
+            js = requests.get(full, headers=HEADERS, timeout=TIMEOUT).text[:400000]
+            L += grep_js(js, full.split("/")[-1][:40])
+        except Exception:  # noqa: BLE001
+            pass
+    # Tentativas diretas nos endereços de dados (POST no estilo DataTables e GET)
+    tries = [e for e in endpoints if "/ajax/" in e or "getvalues" in e][:4]
+    body = {"draw": 1, "start": 0, "length": 5, "search[value]": ""}
+    for ep in tries:
+        for method in ("POST", "GET"):
+            try:
+                r = requests.request(method, ep, headers=HEADERS, timeout=TIMEOUT,
+                                     data=body if method == "POST" else None)
+                snippet = " ".join(r.text[:350].split())
+                ctype = r.headers.get("content-type", "")[:40]
+                L.append(f"{method} {ep} -> HTTP {r.status_code} {ctype} :: {snippet}")
+            except Exception as e:  # noqa: BLE001
+                L.append(f"{method} {ep} -> erro {str(e)[:100]}")
+    return L[:90]
+
+
 def check_city(cfg: dict) -> dict:
     name, status = cfg["name"], cfg.get("status")
     urls = []
@@ -126,7 +179,7 @@ def check_city(cfg: dict) -> dict:
         if cfg.get(key) and cfg[key] not in urls:
             urls.append(cfg[key])
     res = {"name": name, "status": status, "access": cfg.get("access", ""), "type": cfg.get("source_type", ""),
-           "pages": [], "portals": [], "endpoints": [], "dry": None}
+           "pages": [], "portals": [], "endpoints": [], "dry": None, "probe": None, "dry_log": []}
 
     for u in urls:
         code, final, html, err = fetch(u)
@@ -156,12 +209,21 @@ def check_city(cfg: dict) -> dict:
                                  "platforms": detect_platforms(final, html), "title": page_title(html),
                                  "robots": robots_status(final) if (code and code < 400) else None})
 
+    # Sondagem do PermitEyes (só nas cidades marcadas com probe: true)
+    if cfg.get("probe"):
+        target = next((u for u in ([cfg.get("portal_url")] + res["portals"]) if u and "permiteyes" in u and "publicview" in u), None)
+        if target:
+            res["probe"] = {"url": target, "lines": probe_permiteyes(target, res["endpoints"])}
+
     # Coleta de teste (cidades com adaptador)
     if status in ("confirmed", "experimental") and cfg.get("source_type") in ADAPTERS:
         try:
             ad = ADAPTERS[cfg["source_type"]](city=name, state="massachusetts", config=cfg.get("config", {}),
                                               field_map=cfg.get("field_map", {}), source_link=cfg.get("source_link", ""))
-            rows = ad.fetch(days_back=14)
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                rows = ad.fetch(days_back=14)
+            res["dry_log"] = [ln for ln in buf.getvalue().splitlines() if ln.strip()][:25]
             sample = rows[0] if rows else None
             res["dry"] = {"ok": True, "count": len(rows),
                           "sample": ({k: sample.get(k) for k in ("permit_number", "address", "permit_type",
@@ -169,6 +231,7 @@ def check_city(cfg: dict) -> dict:
                                                                  "issue_date")} if sample else None)}
         except Exception as e:  # noqa: BLE001
             res["dry"] = {"ok": False, "error": str(e)[:300]}
+            res["dry_log"] = [ln for ln in buf.getvalue().splitlines() if ln.strip()][:25] if "buf" in dir() else []
     return res
 
 
@@ -209,6 +272,14 @@ def render(results: list[dict]) -> str:
                 L.append(f"- Coleta de teste (14 dias): {r['dry']['count']} permits. Exemplo: {r['dry']['sample']}")
             else:
                 L.append(f"- Coleta de teste FALHOU: {r['dry']['error']}")
+            if r.get("dry_log"):
+                L.append("- Mensagens da coleta de teste:")
+                L += [f"    {ln}" for ln in r["dry_log"]]
+        if r.get("probe"):
+            L.append(f"- Sondagem do PermitEyes em {r['probe']['url']}:")
+            L.append("```")
+            L += r["probe"]["lines"]
+            L.append("```")
     return "\n".join(L) + "\n"
 
 
