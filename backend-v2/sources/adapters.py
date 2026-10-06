@@ -5,7 +5,7 @@ Cada cidade vira só uma entrada em registry.yaml. Os adapters sabem conversar
 com a plataforma (CKAN, Socrata, ArcGIS) e traduzem os campos de cada cidade
 para o formato padrão do Permit Radar.
 
-Versão 2.5: Worcester (ArcGIS) e relatórios em arquivo; filtra permits de especialidade, classifica o tipo de obra
+Versão 2.6 (PermitEyes e Reading): Worcester (ArcGIS) e relatórios em arquivo; filtra permits de especialidade, classifica o tipo de obra
 (New Construction / Addition / Renovation / Demolition) e descobre colunas sozinho.
 Para ver colunas e tipos de permit no log, defina PERMIT_DEBUG=1.
 """
@@ -13,6 +13,7 @@ Para ver colunas e tipos de permit no log, defina PERMIT_DEBUG=1.
 from __future__ import annotations
 
 import csv
+import html as html_lib
 import io
 import os
 import re
@@ -31,21 +32,21 @@ HEADERS = {"User-Agent": "PermitRadar/1.0 (public permit data aggregator)"}
 DEFAULT_CANDIDATES = {
     "permit_number": ["permit_number", "permitnumber", "permit_no", "permit_num", "permit_nbr",
                       "permit", "record_number", "record__", "record_no", "permit_id",
-                      "plannumber", "id"],
+                      "ap_no", "record", "plannumber", "id"],
     "address": ["address", "full_address", "site_address", "street_address",
                 "property_address", "project_address", "location_address", "location"],
     "permit_type": ["permit_type", "permittypedescr", "permit_type_description",
-                    "permit_for", "record_type", "worktype", "work_type", "type"],
-    "status": ["status", "permit_status", "record_status", "current_status"],
+                    "permit_for", "appl_type", "record_type", "worktype", "work_type", "type"],
+    "status": ["status", "permit_status", "record_status", "appl_status", "current_status"],
     "estimated_value": ["estimated_cost", "declared_valuation", "total_project_cost",
                         "total_cost_of_construction", "total_cost", "project_value",
                         "estimated_value", "est_cost", "job_cost", "project_cost",
                         "construction_cost", "cost_of_construction", "valuation",
                         "building_cost", "value", "cost"],
     "issue_date": ["issue_date", "issued_date", "date_issued", "permit_issue_date",
-                   "permit_license_issued_date", "issuance_date", "issued"],
+                   "permit_license_issued_date", "issuance_date", "issued", "appl_date", "date_submitted"],
     "description": ["description", "comments", "project_description",
-                    "work_description", "scope_of_work", "description_of_work",
+                    "work_description", "brief_description", "scope_of_work", "description_of_work",
                     "detailed_description_of_work", "isd_approved_description"],
     "owner": ["owner", "owner_name", "property_owner", "owner_legal_name"],
     "applicant": ["applicant", "applicant_name"],
@@ -193,6 +194,18 @@ class BaseAdapter:
             if std_field != "permit_type" and isinstance(val, str) and val.strip().lower() in EMPTY_VALUES:
                 continue
             return val
+        if self.config.get("prefix_match"):
+            # cabeçalhos longos, ex.: "project_cost_please_enter_a_whole_number..." casam com "project_cost"
+            for name in candidates:
+                n = str(name).lower()
+                if len(n) < 8:
+                    continue
+                for lk, key in lower.items():
+                    if lk.startswith(n + "_") and raw.get(key) not in (None, ""):
+                        val = raw[key]
+                        if not (std_field != "permit_type" and isinstance(val, str)
+                                and val.strip().lower() in EMPTY_VALUES):
+                            return val
         return None
 
     def normalize(self, raw_records: list[dict]) -> list[dict]:
@@ -261,9 +274,13 @@ class BaseAdapter:
         s = str(v).strip()
         if ISO_DATE.match(s):
             return s[:10]
-        m = re.match(r"^(\d{1,2})/(\d{1,2})/(\d{4})", s)
+        m = re.match(r"^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})", s)
         if m:
-            return f"{m.group(3)}-{int(m.group(1)):02d}-{int(m.group(2)):02d}"
+            a, b, y = int(m.group(1)), int(m.group(2)), m.group(3)
+            if len(y) == 2:
+                y = "20" + y
+            month, day = (b, a) if (a > 12 and b <= 12) else (a, b)   # padrão EUA: mês/dia/ano
+            return f"{y}-{month:02d}-{day:02d}"
         return s
 
 
@@ -551,10 +568,167 @@ class FileReportAdapter(BaseAdapter):
         return [r for r in records if r.get("issue_date") and r["issue_date"] >= since]
 
 
+class PermitEyesAdapter(BaseAdapter):
+    """PermitEyes "Public View" (Full Circle Technologies) — usado por Taunton, Hingham, Falmouth,
+    Concord, North Reading, Attleboro, Mansfield e cidades de Berkshire.
+
+    A tela pública é uma tabela DataTables que pede os dados em ajax/<arquivo>.php. Este adaptador:
+      1. abre a página pública e lê os nomes das colunas (que variam de cidade para cidade);
+      2. acha o endereço de dados que responde em JSON;
+      3. descobre se os registros mais novos ficam no começo ou no fim da lista;
+      4. busca poucas páginas a partir do lado mais novo e traduz as colunas.
+    Config: portal_url, ajax_urls (opcional), page_size, max_pages, newest_at ("start"/"end")."""
+
+    DEFAULT_ENDPOINTS = ["ajax/getpublicview.php", "ajax/getbuildingpublichome.php"]
+
+    @staticmethod
+    def _clean(cell) -> str:
+        txt = re.sub(r"<[^>]+>", " ", str(cell if cell is not None else ""))
+        return " ".join(html_lib.unescape(txt).split())
+
+    def _tables(self, page: str) -> dict:
+        out = {}
+        for tid, body in re.findall(r"<table[^>]*\bid=[\"']([^\"']+)[\"'][^>]*>(.*?)</table>", page, re.I | re.S):
+            heads = [self._clean(t) for t in re.findall(r"<th[^>]*>(.*?)</th>", body, re.I | re.S)]
+            if heads:
+                out[tid] = heads
+        return out
+
+    def _pick_headers(self, tables: dict, endpoint: str) -> list[str]:
+        want = "building" if "building" in endpoint.lower() else "publicview"
+        for tid, heads in tables.items():
+            if want in tid.lower() and any("issue" in h.lower() for h in heads):
+                return heads
+        best = [h for h in tables.values() if any("issue" in x.lower() for x in h)]
+        return max(best, key=len) if best else []
+
+    def _post(self, url: str, start: int, length: int) -> dict:
+        data = {"draw": 1, "start": start, "length": length, "search[value]": ""}
+        last = None
+        for attempt in range(3):
+            try:
+                resp = requests.post(url, data=data, headers=HEADERS, timeout=60)
+                if resp.status_code >= 400:
+                    raise RuntimeError(f"HTTP {resp.status_code}")
+                js = resp.json()
+                if not isinstance(js, dict) or "data" not in js:
+                    raise RuntimeError("resposta sem o campo data")
+                return js
+            except Exception as e:  # noqa: BLE001
+                last = e
+                time.sleep(2 * (attempt + 1))
+        raise RuntimeError(f"{url}: {last}")
+
+    def _to_dicts(self, rows: list, heads: list[str]) -> list[dict]:
+        keys = [_norm_header(h) or f"col{i}" for i, h in enumerate(heads)]
+        out = []
+        for r in rows:
+            cells = [self._clean(c) for c in r]
+            n = min(len(cells), len(keys))
+            d = {k: v for k, v in zip(keys[len(keys) - n:], cells[len(cells) - n:]) if v}
+            if "site_address" not in d and (d.get("street_no") or d.get("street_name")):
+                d["site_address"] = f"{d.get('street_no', '')} {d.get('street_name', '')}".strip()
+            out.append(d)
+        return out
+
+    def _row_date(self, d: dict) -> str:
+        v = self._to_date(self._pick(d, "issue_date"))
+        return v if isinstance(v, str) and ISO_DATE.match(v) else ""
+
+    def fetch_raw(self, days_back: int) -> list[dict]:
+        view_url = self.config["portal_url"]
+        if not robots_allows(view_url):
+            raise RuntimeError("o robots.txt não permite coleta automática desta página")
+        page = _http_get(view_url).text
+        tables = self._tables(page)
+
+        endpoints = list(self.config.get("ajax_urls") or self.DEFAULT_ENDPOINTS)
+        for ep in re.findall(r"ajax/[A-Za-z_]+\.php", page):
+            if ep not in endpoints and not re.search(r"attach|modal|inspect|check", ep, re.I):
+                endpoints.append(ep)
+
+        url = js0 = None
+        for ep in endpoints:
+            full = urljoin(view_url, ep)
+            try:
+                js0 = self._post(full, 0, 1)
+            except Exception:  # noqa: BLE001
+                continue
+            if js0.get("data") or js0.get("recordsTotal"):
+                url = full
+                break
+        if not url:
+            raise RuntimeError(f"nenhum endereço de dados respondeu (tentados: {endpoints})")
+
+        heads = self._pick_headers(tables, url)
+        print(f"[info] {self.city}: endereço de dados {url.split('/')[-1]}; colunas: {heads}")
+        if not heads:
+            raise RuntimeError("não encontrei os nomes das colunas na página")
+
+        total = int(str(js0.get("recordsTotal") or js0.get("recordsFiltered") or len(js0.get("data", []))).replace(",", "") or 0)
+        first = self._to_dicts(js0.get("data", []), heads)
+        newest_at = self.config.get("newest_at")
+        if not newest_at:
+            last_js = self._post(url, max(total - 1, 0), 1) if total > 1 else js0
+            last = self._to_dicts(last_js.get("data", []), heads)
+            d_first = self._row_date(first[0]) if first else ""
+            d_last = self._row_date(last[0]) if last else ""
+            newest_at = "end" if d_last > d_first else "start"
+            print(f"[info] {self.city}: {total} registros; data no início={d_first or '?'}, no fim={d_last or '?'}; mais novos no {newest_at}")
+        if first:
+            print(f"[info] {self.city}: exemplo de linha: {first[0]}")
+
+        since = (date.today() - timedelta(days=days_back)).isoformat()
+        size = int(self.config.get("page_size", 100))
+        rows: list[dict] = []
+        pos_end = total
+        pos_start = 0
+        for _ in range(int(self.config.get("max_pages", 6))):
+            if newest_at == "start":
+                st, length = pos_start, min(size, max(total - pos_start, 1))
+            else:
+                st = max(pos_end - size, 0)
+                length = pos_end - st
+            if length <= 0:
+                break
+            js = self._post(url, st, length)
+            got = js.get("data", [])
+            if 0 < len(got) < length and size > len(got):   # o servidor limita o tamanho da página
+                size = len(got)
+                if newest_at == "end":
+                    continue
+            batch = self._to_dicts(got, heads)
+            rows += batch
+            if not got:
+                break
+            dates = [d for d in (self._row_date(b) for b in batch) if d]
+            if dates and min(dates) < since:
+                break
+            if newest_at == "start":
+                pos_start += len(got)
+                if pos_start >= total:
+                    break
+            else:
+                pos_end = st
+                if pos_end <= 0:
+                    break
+            time.sleep(1)
+        return rows
+
+    def fetch(self, days_back: int = 2) -> list[dict]:
+        records = self.normalize(self.fetch_raw(days_back))
+        since = (date.today() - timedelta(days=days_back)).isoformat()
+        dated = [r["issue_date"] for r in records if r.get("issue_date")]
+        if dated:
+            print(f"[info] {self.city}: data mais recente encontrada: {max(dated)}")
+        return [r for r in records if r.get("issue_date") and r["issue_date"] >= since]
+
+
 ADAPTERS = {
     "ckan": CKANAdapter,
     "socrata": SocrataAdapter,
     "arcgis": ArcGISAdapter,
     "arcgis_query": ArcGISQueryAdapter,
     "file_report": FileReportAdapter,
+    "permiteyes": PermitEyesAdapter,
 }

@@ -81,11 +81,14 @@ states:
           link_text_regex: "Building Permits Issued"
           max_files: 2
           min_days_back: 45
-        field_map: {}
+          prefix_match: true       # cabeçalhos longos de agosto: "project_cost_please_enter..."
+        field_map:
+          # Reading não tem coluna de construtor: "dba" (nome da empresa) ou o requerente
+          contractor: [dba, applicant_name]
         source_link: "https://www.readingma.gov/959/Monthly-Building-Permit-Report"
         info_url: "https://www.readingma.gov/959/Monthly-Building-Permit-Report"
         portal_url: "https://readingma.portal.opengov.com/"
-        notes: "Relatório mensal em Excel (confirmado). O teste de saúde de 06/10 retornou 0 permits sem erro; falta ver as colunas reais. O portal OpenGov deles não permite coleta (robots.txt)."
+        notes: "Relatório mensal em Excel; robots.txt de readingma.gov permite. Colunas reais conferidas em 06/10 (record, full_address, date_issued, project_cost, dba...). Sem construtor próprio: usa dba/requerente. O portal OpenGov deles não permite coleta."
 
       # ======================= PDF: PRECISAM DE ADAPTADOR DE PLATAFORMA =======================
 
@@ -108,48 +111,85 @@ states:
 
       - name: North Reading
         source_type: permiteyes
-        status: needs_adapter
+        status: experimental
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/northreading/publicview.php"
         info_url: "https://www.northreadingma.gov/210/Project-Updates"
+        config:
+          portal_url: "https://permiteyes.us/northreading/publicview.php"
+          page_size: 100
+          max_pages: 5
+        field_map: {}
+        source_link: "https://permiteyes.us/northreading/publicview.php"
         probe: true
-        notes: "PermitEyes Public View (robots.txt permite). Permits ativos desde set/2019."
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Permits ativos desde set/2019. Endereço de dados ainda não identificado."
+
 
 
       - name: Concord
         source_type: permiteyes
-        status: needs_adapter
+        status: experimental
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/concord/publicview.php"
         info_url: "https://www.concordma.gov/589/Building-Permit-Information"
-        notes: "PermitEyes Public View (robots.txt permite). Building permits emitidos desde 01/01/2021."
+        config:
+          portal_url: "https://permiteyes.us/concord/publicview.php"
+          page_size: 100
+          max_pages: 5
+        field_map: {}
+        source_link: "https://permiteyes.us/concord/publicview.php"
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Building permits emitidos desde 01/01/2021."
+
 
 
       - name: Mansfield
         source_type: permiteyes
-        status: needs_adapter
+        status: experimental
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/mansfield/publicview.php"
         info_url: "https://www.mansfieldma.com/156/Building-Department"
-        notes: "PermitEyes Public View (robots.txt permite). O site da prefeitura bloqueia acesso automático; endereço do PermitEyes ainda a confirmar."
+        config:
+          portal_url: "https://permiteyes.us/mansfield/publicview.php"
+          page_size: 100
+          max_pages: 5
+        field_map: {}
+        source_link: "https://permiteyes.us/mansfield/publicview.php"
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Página do PermitEyes confirmada (HTTP 200); o site da prefeitura bloqueia acesso automático."
+
 
 
       - name: Pittsfield
         source_type: permiteyes
-        status: needs_adapter
+        status: experimental
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/berkshire/publicview.php"
         info_url: "https://www.pittsfieldma.gov/226/Public-View---Permit-Records"
-        notes: "PermitEyes Public View (robots.txt permite). Região Berkshire; registros desde 1985."
+        config:
+          portal_url: "https://permiteyes.us/berkshire/publicview.php"
+          page_size: 100
+          max_pages: 5
+        field_map: {}
+        source_link: "https://permiteyes.us/berkshire/publicview.php"
+        probe: true
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Região Berkshire (várias cidades na mesma tela); o robots.txt do site da prefeitura não permite, mas o do PermitEyes sim."
+
 
 
       - name: Great Barrington
         source_type: permiteyes
-        status: needs_adapter
+        status: experimental
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/berkshire/greatbarringtonpublicview.php"
         info_url: "https://greatbarringtonma.civicpluswebopen.com/building-department/pages/online-permitting"
-        notes: "PermitEyes Public View (robots.txt permite). Colunas: Issue Date, Applicant, tipo e status."
+        config:
+          portal_url: "https://permiteyes.us/berkshire/greatbarringtonpublicview.php"
+          page_size: 100
+          max_pages: 5
+        field_map: {}
+        source_link: "https://permiteyes.us/berkshire/greatbarringtonpublicview.php"
+        probe: true
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Região Berkshire."
+
 
 
       # ======================= PDF: SEM FEED UTILIZÁVEL AGORA =======================
@@ -202,21 +242,35 @@ states:
 
       - name: Hingham
         source_type: permiteyes
-        status: needs_adapter
+        status: experimental
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/hingham/publicview.php"
         info_url: "https://www.hingham-ma.gov/577/View"
-        probe: true
-        notes: "PermitEyes Public View (robots.txt permite). Identificado pelo teste de saúde."
+        config:
+          portal_url: "https://permiteyes.us/hingham/publicview.php"
+          page_size: 100
+          max_pages: 5
+          ajax_urls: ["ajax/getbuildingpublichome.php"]
+        field_map: {}
+        source_link: "https://permiteyes.us/hingham/publicview.php"
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). A tela traz Applicant, Owner e descrição."
+
 
 
       - name: Attleboro
         source_type: permiteyes
-        status: needs_adapter
+        status: experimental
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/attleboro/publicview.php"
         info_url: "https://www.cityofattleboro.us/167/Building-Inspection"
-        notes: "PermitEyes Public View (robots.txt permite). Identificado pelo teste de saúde; existe também o arquivo antigo (permiteyes.net)."
+        config:
+          portal_url: "https://permiteyes.us/attleboro/publicview.php"
+          page_size: 100
+          max_pages: 5
+        field_map: {}
+        source_link: "https://permiteyes.us/attleboro/publicview.php"
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Existe também o arquivo antigo (permiteyes.net)."
+
 
 
       # ======================= JÁ MAPEADAS ANTES (sem API pública) =======================
@@ -287,30 +341,52 @@ states:
 
       - name: Taunton
         source_type: permiteyes
-        status: needs_adapter
+        status: experimental
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/taunton/publicview.php"
         info_url: "https://www.taunton-ma.gov/169/Online-Building-Permits"
-        probe: true
-        notes: "PermitEyes Public View (robots.txt permite). Migrou do Accela para PermitEyes."
+        config:
+          portal_url: "https://permiteyes.us/taunton/publicview.php"
+          page_size: 100
+          max_pages: 5
+          ajax_urls: ["ajax/getpublicview.php"]
+        field_map: {}
+        source_link: "https://permiteyes.us/taunton/publicview.php"
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). A tela traz Contractor Name e Estimated Cost."
+
 
 
       - name: Falmouth
         source_type: permiteyes
-        status: needs_adapter
+        status: experimental
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/falmouth/publicview.php"
         info_url: "https://www.falmouthma.gov/313/Online-Permitting"
-        notes: "PermitEyes Public View (robots.txt permite). Public View sem login."
+        config:
+          portal_url: "https://permiteyes.us/falmouth/publicview.php"
+          page_size: 100
+          max_pages: 5
+          ajax_urls: ["ajax/getbuildingpublichome.php"]
+        field_map: {}
+        source_link: "https://permiteyes.us/falmouth/publicview.php"
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Endereço de dados provável: getbuildingpublichome."
+
 
 
       - name: Stockbridge
         source_type: permiteyes
-        status: needs_adapter
+        status: experimental
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/berkshire/publicview.php"
         info_url: "https://www.stockbridge-ma.gov/building-inspector/page/permiteyes-how"
-        notes: "PermitEyes Public View (robots.txt permite). Região Berkshire."
+        config:
+          portal_url: "https://permiteyes.us/berkshire/publicview.php"
+          page_size: 100
+          max_pages: 5
+        field_map: {}
+        source_link: "https://permiteyes.us/berkshire/publicview.php"
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Região Berkshire."
+
 
 
       - name: Arlington
