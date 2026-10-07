@@ -5,7 +5,7 @@ Cada cidade vira só uma entrada em registry.yaml. Os adapters sabem conversar
 com a plataforma (CKAN, Socrata, ArcGIS) e traduzem os campos de cada cidade
 para o formato padrão do Permit Radar.
 
-Versão 2.10 (PermitEyes: alinhamento por rua, tipo e número de permit): Worcester (ArcGIS) e relatórios em arquivo; filtra permits de especialidade, classifica o tipo de obra
+Versão 2.11 (tipo só 'residencial/comercial' sem descrição = Unspecified): Worcester (ArcGIS) e relatórios em arquivo; filtra permits de especialidade, classifica o tipo de obra
 (New Construction / Addition / Renovation / Demolition) e descobre colunas sozinho.
 Para ver colunas e tipos de permit no log, defina PERMIT_DEBUG=1.
 """
@@ -112,6 +112,8 @@ def classify_permit(permit_type, description=None) -> str:
         return "Unspecified"
     if re.fullmatch(r"\s*(sfa|sfd|mfd|sf|fnd)\.?\s*", t, re.I) and not DESC_INCLUDE_RE.search(d):
         return "Unspecified"      # sigla sem significado confirmado e sem descrição que ajude
+    if not d.strip() and re.fullmatch(r"\s*(resi|comm|residential|commercial)\.?\s*", t, re.I):
+        return "Unspecified"      # "residencial" ou "comercial" sozinho não diz se é obra nova, ampliação ou reforma
     if re.search(r"new construction|erect", t, re.I):
         return "New Construction"
     if NEW_CONSTRUCTION_DESC_RE.search(d) and not WORK_ON_EXISTING_RE.search(d):
