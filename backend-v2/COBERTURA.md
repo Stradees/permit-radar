@@ -17,7 +17,7 @@
 | Mansfield | 🧪 Em teste | search_by_address_or_record | PermitEyes Public View. Testado em 07/10: os endereços de dados redirecionam para o login (/mansfield/login.php) ou dão erro 500, então a consulta pública parece exigir sessão. O site da prefeitura também bloqueia acesso automático. |
 | Pittsfield | 🧪 Em teste | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Região Berkshire (várias cidades na mesma tela); o robots.txt do site da prefeitura não permite, mas o do PermitEyes sim. |
 | Great Barrington | 🧪 Em teste | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Região Berkshire. |
-| Stockbridge | 🧪 Em teste | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Região Berkshire. |
+| Stockbridge | 🧪 Em teste | search_by_address_or_record | PermitEyes Public View (Berkshire). Cada cidade tem sua própria página (<cidade>publicview.php); este endereço segue o padrão de Great Barrington e ainda precisa ser confirmado. |
 | Brookline | 🔧 Falta adaptador | search_by_address_or_record | Accela Citizen Access. Pesquisa por número, endereço ou nome. |
 | Lowell | 🔎 A identificar | search_by_address_or_record | MUNIS Citizen Self Service (Tyler). O site menciona relatórios mensais mediante solicitação. |
 | West Springfield | 🔎 A identificar | open_data_api | Portal de dados abertos ArcGIS está no ar, mas não encontramos camada de permits na busca do ArcGIS Hub. |
