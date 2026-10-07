@@ -111,7 +111,7 @@ states:
 
       - name: North Reading
         source_type: permiteyes
-        status: experimental
+        status: confirmed
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/northreading/publicview.php"
         info_url: "https://www.northreadingma.gov/210/Project-Updates"
@@ -122,7 +122,7 @@ states:
         field_map: {}
         source_link: "https://permiteyes.us/northreading/publicview.php"
         probe: true
-        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Permits ativos desde set/2019. Endereço de dados ainda não identificado."
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Permits ativos desde set/2019. Testada em 06/10: 30 permits em 14 dias, sem valor nem construtora."
 
 
 
@@ -156,7 +156,7 @@ states:
         field_map: {}
         source_link: "https://permiteyes.us/mansfield/publicview.php"
         probe: true
-        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Página do PermitEyes confirmada (HTTP 200); o site da prefeitura bloqueia acesso automático."
+        notes: "PermitEyes Public View. Testado em 07/10: os endereços de dados redirecionam para o login (/mansfield/login.php) ou dão erro 500, então a consulta pública parece exigir sessão. O site da prefeitura também bloqueia acesso automático."
 
 
 
@@ -170,6 +170,7 @@ states:
           portal_url: "https://permiteyes.us/berkshire/publicview.php"
           page_size: 100
           max_pages: 5
+          town_name: "Pittsfield"
         field_map: {}
         source_link: "https://permiteyes.us/berkshire/publicview.php"
         probe: true
@@ -187,6 +188,7 @@ states:
           portal_url: "https://permiteyes.us/berkshire/greatbarringtonpublicview.php"
           page_size: 100
           max_pages: 5
+          town_name: "Great Barrington"
         field_map: {}
         source_link: "https://permiteyes.us/berkshire/greatbarringtonpublicview.php"
         probe: true
@@ -261,7 +263,7 @@ states:
 
       - name: Attleboro
         source_type: permiteyes
-        status: experimental
+        status: confirmed
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/attleboro/publicview.php"
         info_url: "https://www.cityofattleboro.us/167/Building-Inspection"
@@ -387,6 +389,7 @@ states:
           portal_url: "https://permiteyes.us/berkshire/publicview.php"
           page_size: 100
           max_pages: 5
+          town_name: "Stockbridge"
         field_map: {}
         source_link: "https://permiteyes.us/berkshire/publicview.php"
         notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Região Berkshire."

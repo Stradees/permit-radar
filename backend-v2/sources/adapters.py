@@ -5,7 +5,7 @@ Cada cidade vira só uma entrada em registry.yaml. Os adapters sabem conversar
 com a plataforma (CKAN, Socrata, ArcGIS) e traduzem os campos de cada cidade
 para o formato padrão do Permit Radar.
 
-Versão 2.7 (PermitEyes com alinhamento de colunas): Worcester (ArcGIS) e relatórios em arquivo; filtra permits de especialidade, classifica o tipo de obra
+Versão 2.8 (PermitEyes: alinhamento, town_id e direção robusta): Worcester (ArcGIS) e relatórios em arquivo; filtra permits de especialidade, classifica o tipo de obra
 (New Construction / Addition / Renovation / Demolition) e descobre colunas sozinho.
 Para ver colunas e tipos de permit no log, defina PERMIT_DEBUG=1.
 """
@@ -66,7 +66,7 @@ EMPTY_VALUES = {"n/a", "na", "none", "null", "-", "--", "unknown", "user", ""}
 INCLUDE_TYPE_RE = re.compile(
     r"(building|bldg|short form|long form|erect|new construction|foundation|alteration|"
     r"addition|demolition|remodel|renovation|construction|roof|siding|residential|commercial|"
-    r"deck|accessory|adu|garage|carport|restore after fire|resi|comm\b|bldg|demo|\bsf[ad]\b|\bmfd\b)", re.I)
+    r"deck|accessory|adu|garage|carport|restore after fire|resi|comm\b|bldg|demo|\bsf[ad]\b|\bmfd\b|\bfnd\b)", re.I)
 EXCLUDE_TYPE_RE = re.compile(
     r"\b(amendment|certificate|electrical|plumbing|gas|mechanical|sheet metal|fire alarms?|"
     r"low voltage|sprinkler|signs?|occupancy|excavation|asbestos|tents?|dumpster|food|tobacco|"
@@ -110,6 +110,8 @@ def classify_permit(permit_type, description=None) -> str:
     d = (description or "")
     if re.search(r"type not listed", t, re.I):
         return "Unspecified"
+    if re.fullmatch(r"\s*(sfa|sfd|mfd|sf|fnd)\.?\s*", t, re.I) and not DESC_INCLUDE_RE.search(d):
+        return "Unspecified"      # sigla sem significado confirmado e sem descrição que ajude
     if re.search(r"new construction|erect", t, re.I):
         return "New Construction"
     if NEW_CONSTRUCTION_DESC_RE.search(d) and not WORK_ON_EXISTING_RE.search(d):
@@ -670,11 +672,52 @@ class PermitEyesAdapter(BaseAdapter):
                 time.sleep(2 * (attempt + 1))
         raise RuntimeError(f"{last}")
 
+    def _resolve_town(self, page: str):
+        """Páginas multi-cidade (Berkshire): cada aba tem data-town-id e data-url; o POST precisa do town_id."""
+        tabs = []
+        for m in re.finditer(r"<[^>]*data-town-id=[^>]*>", page, re.I):
+            tag = m.group(0)
+            inner = page[m.end(): m.end() + 80].split("<")[0]
+            tid = re.search(r"data-town-id=[\"']?(\d+)", tag, re.I)
+            url = re.search(r"data-url=[\"']([^\"']+)", tag, re.I)
+            text = self._clean(inner)
+            title = re.search(r"(?:title|data-town-name|aria-label)=[\"']([^\"']+)", tag, re.I)
+            if tid:
+                tabs.append({"id": tid.group(1), "url": url.group(1) if url else None,
+                             "name": (title.group(1) if title else text)})
+        if not tabs:
+            return
+        uniq = {(t["id"], t["name"]): t for t in tabs}.values()
+        print(f"[info] {self.city}: abas de cidades encontradas: {[(t['id'], t['name'], t['url']) for t in list(uniq)[:14]]}")
+        want_id = str(self.config.get("town_id") or "")
+        want_name = str(self.config.get("town_name") or "").lower()
+        chosen = None
+        for t in uniq:
+            if (want_id and t["id"] == want_id) or (want_name and want_name in t["name"].lower()):
+                chosen = t
+                break
+        if chosen is None and len(set(t["id"] for t in uniq)) == 1:
+            chosen = next(iter(uniq))
+        if chosen:
+            extra = dict(self.config.get("extra_params") or {})
+            extra["town_id"] = chosen["id"]
+            self.config = {**self.config, "extra_params": extra}
+            if chosen["url"] and not self.config.get("ajax_urls"):
+                self.config["ajax_urls"] = [chosen["url"]]
+            print(f"[info] {self.city}: usando town_id={chosen['id']} ({chosen['name']})")
+        else:
+            print(f"[aviso] {self.city}: não achei a aba desta cidade; informe town_id ou town_name no cadastro")
+
     # ---- alinhamento das colunas ----
     def _plausible(self, key: str, cell: str) -> float:
         if not cell:
             return 0.2 if key in self.ACTION_KEYS else 0.0
+        long_text = len(cell) >= 12 and not self._DATE.match(cell) and not self._MONEY.match(cell)
         if key in self.ACTION_KEYS:
+            return -1.0 if long_text else -0.5
+        if "description" in key or key.startswith("brief"):
+            return 0.8 if long_text else 0.0
+        if key.startswith("col") and key[3:].isdigit():       # cabeçalho sem nome
             return -0.5
         if "date" in key:
             return 1.0 if self._DATE.match(cell) else -1.5
@@ -752,6 +795,7 @@ class PermitEyesAdapter(BaseAdapter):
             raise RuntimeError(f"HTTP {resp.status_code} ao abrir a página pública")
         page = resp.text
         tables = self._tables(page)
+        self._resolve_town(page)
 
         endpoints = list(self.config.get("ajax_urls") or self.DEFAULT_ENDPOINTS)
         for ep in re.findall(r"ajax/[A-Za-z_]+\.php", page):
@@ -800,9 +844,12 @@ class PermitEyesAdapter(BaseAdapter):
         first = self._to_dicts(js0.get("data", []), keys, aligned)
         if not newest_at:
             last = self._to_dicts(last_js.get("data", []), keys, aligned) if last_js else first
-            d_first = self._row_date(first[0]) if first else ""
-            d_last = self._row_date(last[-1]) if last else ""
-            newest_at = "end" if d_last > d_first else "start"
+            d_first = max([d for d in (self._row_date(r) for r in first) if d] or [""])
+            d_last = max([d for d in (self._row_date(r) for r in last) if d] or [""])
+            if d_first and d_last and d_first != d_last:
+                newest_at = "end" if d_last > d_first else "start"
+            else:
+                newest_at = "end"          # em todas as cidades verificadas, os mais novos ficam no fim
             print(f"[info] {self.city}: {total} registros; data no início={d_first or '?'}, no fim={d_last or '?'}; mais novos no {newest_at}")
         if first:
             print(f"[info] {self.city}: exemplo de linha: {first[0]}")
