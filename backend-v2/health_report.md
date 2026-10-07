@@ -1,6 +1,6 @@
 # Permit Radar — teste de saúde das cidades (2026-10-07)
 
-Resumo por situação: address_only: 2, confirmed: 7, experimental: 7, login_required: 2, needs_adapter: 1, planning_only: 1, robots_blocked: 8, to_investigate: 9
+Resumo por situação: address_only: 2, confirmed: 9, experimental: 5, login_required: 2, needs_adapter: 1, planning_only: 1, robots_blocked: 8, to_investigate: 9
 
 | Cidade | Situação | Acesso | Páginas no ar | Plataforma detectada | Coleta de teste |
 | --- | --- | --- | --- | --- | --- |
@@ -10,7 +10,7 @@ Resumo por situação: address_only: 2, confirmed: 7, experimental: 7, login_req
 | Reading | confirmed | file_report | 3/3 | CivicPlus, OpenGov/ViewpointCloud | 110 permits |
 | Newton | robots_blocked | search_by_address_or_record | 1/2 | OpenGov/ViewpointCloud | — |
 | Brookline | needs_adapter | search_by_address_or_record | 4/4 | Accela | — |
-| North Reading | experimental | search_by_address_or_record | 3/3 | CivicPlus, PermitEyes | 30 permits |
+| North Reading | confirmed | search_by_address_or_record | 3/3 | CivicPlus, PermitEyes | 31 permits |
 | Concord | experimental | search_by_address_or_record | 4/4 | CivicPlus, PermitEyes | 0 permits |
 | Mansfield | experimental | search_by_address_or_record | 1/2 | PermitEyes | ERRO |
 | Pittsfield | experimental | search_by_address_or_record | 4/4 | CivicPlus, PermitEyes | 0 permits |
@@ -22,7 +22,7 @@ Resumo por situação: address_only: 2, confirmed: 7, experimental: 7, login_req
 | Northampton | planning_only | planning_only | 3/3 | CivicPlus, OpenGov/ViewpointCloud | — |
 | Watertown | robots_blocked | search_by_address_or_record | 4/4 | CivicPlus, OpenGov/ViewpointCloud | — |
 | Hingham | confirmed | search_by_address_or_record | 3/3 | CivicPlus, PermitEyes | 26 permits |
-| Attleboro | experimental | search_by_address_or_record | 4/4 | CivicPlus, PermitEyes | 75 permits |
+| Attleboro | confirmed | search_by_address_or_record | 4/4 | CivicPlus, PermitEyes | 75 permits |
 | Springfield | robots_blocked | search_by_address_or_record | 1/1 | OpenGov/ViewpointCloud | — |
 | New Bedford | robots_blocked | search_by_address_or_record | 1/1 | OpenGov/ViewpointCloud | — |
 | Haverhill | robots_blocked | search_by_address_or_record | 1/1 | OpenGov/ViewpointCloud | — |
@@ -91,20 +91,20 @@ Resumo por situação: address_only: 2, confirmed: 7, experimental: 7, login_req
 - Portais encontrados na página da prefeitura: https://api-prod.accela.com | https://aca-prod.accela.com/BROOKLINE/Accela-Favicon.svg | https://brookline-prod-av.accela.com | https://brooklinema.teamdynamix.com/TDClient/101/Portal/Login.aspx?ReturnUrl=%2fTDClient%2f101%2fPortal%2fKB%2fArticle%2f17096%2fACCELA-Searching-for-Records | https://brooklinema.teamdynamix.com/TDClient/101/Portal/KB/Search?SearchText=%2523Accela
 - Endereços de dados candidatos: https://api-prod.accela.com/profile
 
-### North Reading — experimental
+### North Reading — confirmed
 - https://permiteyes.us/northreading/publicview.php → HTTP 200 · título: Permiteyes · plataforma: PermitEyes · robots.txt: permitido
 - https://www.northreadingma.gov/210/Project-Updates → HTTP 200 · título: Project Updates | North Reading, MA · plataforma: PermitEyes, CivicPlus · robots.txt: permitido
 - https://permiteyes.us/northreading/publicview.php → HTTP 200 · título: Permiteyes · plataforma: PermitEyes · robots.txt: permitido
 - Portais encontrados na página da prefeitura: https://permiteyes.us/northreading/publicview.php
 - Endereços de dados candidatos: https://permiteyes.us/northreading/controller/getvalues_controller.php | https://www.northreadingma.gov/api/v1/SplashModal/Get | https://maps.googleapis.com/maps/api/js?v=3.exp&key= | https://maps.googleapis.com/maps/api/js?v=3.exp&callback=
-- Coleta de teste (14 dias): 30 permits. Exemplo: {'permit_number': '22425', 'address': '5 north st', 'permit_type': 'RESI.', 'category': 'Renovation', 'estimated_value': None, 'contractor': None, 'issue_date': '2026-09-29'}
+- Coleta de teste (14 dias): 31 permits. Exemplo: {'permit_number': '22425', 'address': '5 north st', 'permit_type': 'RESI.', 'category': 'Renovation', 'estimated_value': None, 'contractor': None, 'issue_date': '2026-09-29'}
 - Mensagens da coleta de teste:
     [info] North Reading: endereço de dados getbuildingpublichome.php (pedido completo); colunas: ['Application', 'Permit', 'Inspection', 'Ap. No.', 'Appl. Date', 'Issue Date', 'Site Address', 'Applicant', 'Owner', 'Appl. Type', 'Permit Number', 'Appl. Status', '']
     [info] North Reading: 13 cabeçalhos para 12 células; cabeçalhos sem dado: ['applicant']
-    [info] North Reading: 15537 registros; data no início=2019-08-20, no fim=2026-10-06; mais novos no end
+    [info] North Reading: 15537 registros; data no início=2020-07-15, no fim=2026-10-06; mais novos no end
     [info] North Reading: exemplo de linha: {'ap_no': '1', 'appl_date': '08/20/19', 'issue_date': '08/20/19', 'site_address': '32 winter st', 'owner': 'soriya danny pen', 'appl_type': 'SHT MTL', 'permit_number': 'SH-19-0001', 'appl_status': 'Closed'}
     [info] North Reading: tipos nas 100 linhas lidas: [('ELECT.', 31), ('RESI.', 30), ('GAS', 15), ('PLUMB.', 14), ('CI', 4), ('FND', 2), ('MECH', 2), ('SHT MTL', 1), ('COMM.', 1)]
-    [info] North Reading: 69 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
+    [info] North Reading: 67 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
     [info] North Reading: data mais recente encontrada: 2026-10-06
 - Sondagem do PermitEyes em https://permiteyes.us/northreading/publicview.php:
 ```
@@ -180,12 +180,10 @@ script-inline-3:855: var DeptName = $(this).data("folderpath");
 - Coleta de teste (14 dias): 0 permits. Exemplo: None
 - Mensagens da coleta de teste:
     [info] Concord: endereço de dados getbuildingpublichome.php (pedido completo); colunas: ['Application', 'Description of Work', 'Fees Paid', 'Permit', 'Inspection', 'Ap. No.', 'Appl. Date', 'Issue Date', 'Site Address', 'Applicant', 'Owner', 'Appl. Type', 'Permit Number', 'Appl. Status', '']
-    [info] Concord: 15 cabeçalhos para 12 células; cabeçalhos sem dado: ['description_of_work', 'applicant', 'col14']
-    [info] Concord: 18698 registros; data no início=2023-01-31, no fim=?; mais novos no start
-    [info] Concord: exemplo de linha: {'application': 'replacement of a cook stov...', 'fees_paid': 'Fee: $60.00', 'ap_no': '37153', 'appl_date': '01/30/23', 'issue_date': '01/31/23', 'site_address': '363 main st', 'owner': 'ronald b pontes', 'appl_type': 'GAS', 'permit_number': 'G-23-0029', 'appl_status': 'Final Inspection'}
-    [info] Concord: tipos nas 100 linhas lidas: [('TENT', 84), ('CO (Comm)', 9), ('RESI.', 2), ('GAS', 1), ('COMM.', 1), ('ELECT.', 1), ('PLUMB.', 1), ('CI', 1)]
-    [info] Concord: 97 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
-    [info] Concord: data mais recente encontrada: 2025-02-06
+    [info] Concord: 15 cabeçalhos para 12 células; cabeçalhos sem dado: ['application', 'applicant', 'col14']
+    [info] Concord: 18698 registros; data no início=2026-06-15, no fim=?; mais novos no end
+    [info] Concord: exemplo de linha: {'description_of_work': 'replacement of a cook stov...', 'fees_paid': 'Fee: $60.00', 'ap_no': '37153', 'appl_date': '01/30/23', 'issue_date': '01/31/23', 'site_address': '363 main st', 'owner': 'ronald b pontes', 'appl_type': 'GAS', 'permit_number': 'G-23-0029', 'appl_status': 'Final Inspection'}
+    [info] Concord: tipos nas 0 linhas lidas: []
 - Sondagem do PermitEyes em https://permiteyes.us/concord/publicview.php:
 ```
 script-inline-3:4: // if (pageURL.indexOf("applications.php") > 0 || pageURL.indexOf("buildinghome.php") > 0 ||  pageURL.indexOf("deletedapplications.php") > 0 ||  pageURL.indexOf("printapp
@@ -333,11 +331,14 @@ script-inline-3:761: var DeptName = $(this).data("folderpath");
 - Endereços de dados candidatos: https://permiteyes.us/berkshire/controller/getvalues_controller.php | https://permiteyes.us/berkshire/publicviewmodal.php | https://residentagent-api-production.azurewebsites.net | https://www.pittsfieldma.gov/api/v1/SplashModal/Get | https://maps.googleapis.com/maps/api/js?v=3.exp&key= | https://maps.googleapis.com/maps/api/js?v=3.exp&callback=
 - Coleta de teste (14 dias): 0 permits. Exemplo: None
 - Mensagens da coleta de teste:
+    [info] Pittsfield: abas de cidades encontradas: [('0', '', 'ajax/getpublichome.php')]
+    [info] Pittsfield: usando town_id=0 ()
     [info] Pittsfield: endereço de dados getpublichome.php (pedido completo); colunas: ['Application', 'Permit', 'CO', 'COC', 'Inspection', 'Sign Off', 'Ap. No.', 'Parcel Id', 'Appl. Date', 'Issue Date', 'Street No', 'Street Name', 'Applicant', 'Owner', 'Appl. Type', 'Permit Number', 'Appl. Status', '']
-    [info] Pittsfield: 0 registros; data no início=?, no fim=?; mais novos no start
+    [info] Pittsfield: 0 registros; data no início=?, no fim=?; mais novos no end
     [info] Pittsfield: tipos nas 0 linhas lidas: []
 - Sondagem do PermitEyes em https://permiteyes.us/berkshire/publicview.php:
 ```
+aba de cidade: <a class="tab-header" href="#buildingpublichometab"data-toggle="tab" data-url='ajax/getpublichome.php' data-town-id="0fb1f327-10de-11ee-9520-00e04c68c964"><img src="images/departments/BLDG_sm.gif" val
 script-inline-2:42: url = url.split("#");
 script-inline-2:44: url = url[0];
 script-inline-2:48: url = obj.url;
@@ -397,7 +398,6 @@ script-inline-4:702: //DATE RANGE APPL DATE
 script-inline-4:751: //     var DeptName = $(this).data("folderpath");
 script-inline-4:843: "ajax": {
 script-inline-4:844: "url": url,
-script-inline-4:845: "type":'post'
 ```
 
 ### Great Barrington — experimental
@@ -409,11 +409,14 @@ script-inline-4:845: "type":'post'
 - Endereços de dados candidatos: https://permiteyes.us/berkshire/controller/getvalues_controller.php
 - Coleta de teste (14 dias): 0 permits. Exemplo: None
 - Mensagens da coleta de teste:
+    [info] Great Barrington: abas de cidades encontradas: [('6', '', 'ajax/getgreatbarringtonpublichome.php')]
+    [info] Great Barrington: usando town_id=6 ()
     [info] Great Barrington: endereço de dados getgreatbarringtonpublichome.php (pedido completo); colunas: ['Application', 'Permit', 'CO', 'COC', 'Inspection', 'Sign Off', 'Ap. No.', 'Parcel Id', 'Appl. Date', 'Issue Date', 'Street No', 'Street Name', 'Applicant', 'Owner', 'Appl. Type', 'Permit Number', 'Appl. Status', '']
-    [info] Great Barrington: 0 registros; data no início=?, no fim=?; mais novos no start
+    [info] Great Barrington: 0 registros; data no início=?, no fim=?; mais novos no end
     [info] Great Barrington: tipos nas 0 linhas lidas: []
 - Sondagem do PermitEyes em https://permiteyes.us/berkshire/greatbarringtonpublicview.php:
 ```
+aba de cidade: <a class="tab-header" href="#buildingpublichometab"data-toggle="tab" data-url='ajax/getgreatbarringtonpublichome.php' data-town-id="6da083b6-26d9-11ee-9520-00e04c68c964"><img src="images/departments/B
 script-inline-2:42: url = url.split("#");
 script-inline-2:44: url = url[0];
 script-inline-2:48: url = obj.url;
@@ -473,7 +476,6 @@ script-inline-4:673: //DATE RANGE APPL DATE
 script-inline-4:722: //     var DeptName = $(this).data("folderpath");
 script-inline-4:814: "ajax": {
 script-inline-4:815: "url": url,
-script-inline-4:816: "type":'post'
 ```
 
 ### Danvers — address_only
@@ -525,25 +527,25 @@ script-inline-4:816: "type":'post'
 - Mensagens da coleta de teste:
     [info] Hingham: endereço de dados getbuildingpublichome.php (pedido simples); colunas: ['Application', 'Permit', 'Inspection', 'App.', 'Permit', 'COC', 'Insp.', 'Ap. No.', 'Appl. Date', 'Issue Date', 'Parcel No.', 'Street No.', 'Street Name', 'Applicant', 'Owner', 'Brief Description', 'Appl. Type', 'Permit Number', 'Appl. Status', 'Att.']
     [info] Hingham: 20 cabeçalhos para 17 células; cabeçalhos sem dado: ['application', 'inspection']
-    [info] Hingham: 55101 registros; data no início=2023-01-03, no fim=2026-10-06; mais novos no end
+    [info] Hingham: 55101 registros; data no início=2023-01-03, no fim=2026-10-07; mais novos no end
     [info] Hingham: exemplo de linha: {'ap_no': '961', 'appl_date': '01/03/23', 'issue_date': '01/03/23', 'street_no': '2', 'street_name': 'aberdeen road', 'applicant': 'user', 'owner': 'vaughn john t & alexandra m', 'appl_type': 'RESI.', 'permit_number': 'R-23-0075', 'appl_status': 'Closed', 'site_address': '2 aberdeen road'}
     [info] Hingham: tipos nas 100 linhas lidas: [('ELECT.', 29), ('RESI.', 19), ('PLUMB.', 19), ('GAS', 18), ('COMM.', 8), ('SHTMTL', 6), ('Sprinkler', 1)]
     [info] Hingham: 73 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
     [info] Hingham: data mais recente encontrada: 2026-10-07
 
-### Attleboro — experimental
+### Attleboro — confirmed
 - https://permiteyes.us/attleboro/publicview.php → HTTP 200 · título: Permiteyes · plataforma: PermitEyes · robots.txt: permitido
 - https://www.cityofattleboro.us/167/Building-Inspection → HTTP 200 · título: Building Inspection | Attleboro, MA · plataforma: PermitEyes, CivicPlus · robots.txt: permitido
 - https://permiteyes.net/Attleboro/building/homepage.asp → HTTP 200 · título: Permiteyes · plataforma: PermitEyes · robots.txt: permitido
 - https://permiteyes.us/attleboro/loginuser.php → HTTP 200 · título: Permiteyes · plataforma: PermitEyes · robots.txt: permitido
 - Portais encontrados na página da prefeitura: https://permiteyes.net/Attleboro/building/homepage.asp | https://permiteyes.us/attleboro/loginuser.php
 - Endereços de dados candidatos: https://permiteyes.us/attleboro/publicattachments.php?application_id= | https://permiteyes.us/attleboro/controller/getvalues_controller.php | https://www.cityofattleboro.us/api/v1/SplashModal/Get | https://maps.googleapis.com/maps/api/js?v=3.exp&key= | https://maps.googleapis.com/maps/api/js?v=3.exp&callback= | https://permiteyes.us/attleboro/controller/userregistration_controller.php
-- Coleta de teste (14 dias): 75 permits. Exemplo: {'permit_number': 'SF-26-1633', 'address': '1355 west st', 'permit_type': 'SFA', 'category': 'Renovation', 'estimated_value': None, 'contractor': None, 'issue_date': '2026-10-05'}
+- Coleta de teste (14 dias): 75 permits. Exemplo: {'permit_number': 'R-26-1614', 'address': '14 holman st', 'permit_type': 'RESI.', 'category': 'Renovation', 'estimated_value': None, 'contractor': None, 'issue_date': '2026-09-30'}
 - Mensagens da coleta de teste:
     [info] Attleboro: endereço de dados getpublichome.php (pedido completo); colunas: ['App.', 'Permit', 'COC', 'Insp.', 'Fee', 'Sign Off', 'Ap. No.', 'Appl. Date', 'Issue Date', 'Site Address', 'Applicant', 'Owner', 'Appl. Type', 'Permit Number', 'Appl. Status', 'Att.']
-    [info] Attleboro: 45625 registros; data no início=2017-08-01, no fim=2026-10-07; mais novos no end
+    [info] Attleboro: 45626 registros; data no início=2018-10-04, no fim=2026-10-07; mais novos no end
     [info] Attleboro: exemplo de linha: {'ap_no': '1', 'appl_date': '08/01/17', 'issue_date': '08/01/17', 'site_address': '10 dewey ave', 'applicant': 'ronald menard', 'owner': 'menard ronald w and carol a', 'appl_type': 'RESI.', 'permit_number': 'R-17-0001', 'appl_status': 'PCO Issued'}
-    [info] Attleboro: tipos nas 200 linhas lidas: [('RESI.', 65), ('ELECT.', 51), ('PLUMB.', 19), ('GAS', 18), ('CI', 14), ('MECH', 10), ('COMM.', 7), ('FENCE', 4), ('SHT MTL', 4), ('SFA', 3), ('AGAS', 2), ('SIGN', 1), ('TENT', 1), ('TRENCH', 1)]
+    [info] Attleboro: tipos nas 200 linhas lidas: [('RESI.', 65), ('ELECT.', 52), ('PLUMB.', 19), ('GAS', 17), ('CI', 14), ('MECH', 10), ('COMM.', 7), ('FENCE', 4), ('SHT MTL', 4), ('SFA', 3), ('AGAS', 2), ('SIGN', 1), ('TENT', 1), ('TRENCH', 1)]
     [info] Attleboro: 125 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
     [info] Attleboro: data mais recente encontrada: 2026-10-07
 - Sondagem do PermitEyes em https://permiteyes.us/attleboro/publicview.php:
@@ -614,10 +616,10 @@ POST https://permiteyes.us/attleboro/ajax/getbuildingpublichome.php -> erro HTTP
 - Mensagens da coleta de teste:
     [info] Taunton: endereço de dados getpublicview.php (pedido simples); colunas: ['App.', 'Permit', 'Insp.', 'Ap. No.', 'Appl. Date', 'Issue Date', 'Site Address', 'Applicant', 'Owner', 'Contractor Name', 'Estimated Cost', 'Brief Description', 'Appl. Type', 'Permit Number', 'Appl. Status']
     [info] Taunton: 15 cabeçalhos para 14 células; cabeçalhos sem dado: ['applicant']
-    [info] Taunton: 41198 registros; data no início=2022-03-08, no fim=2026-10-06; mais novos no end
+    [info] Taunton: 41200 registros; data no início=2022-05-10, no fim=2026-10-07; mais novos no end
     [info] Taunton: exemplo de linha: {'ap_no': '5990', 'appl_date': '12/20/21', 'issue_date': '03/08/22', 'site_address': '141 oak street', 'owner': 'city of taunton', 'contractor_name': 'test', 'estimated_cost': '1000.00', 'brief_description': 'water heater replacement', 'appl_type': 'PLUMB.', 'permit_number': 'P-22-0001', 'appl_status': 'Closed'}
-    [info] Taunton: tipos nas 200 linhas lidas: [('RESI.', 54), ('PLUMB.', 53), ('ELECT.', 45), ('GAS', 38), ('COMM.', 5), ('SHT MTL', 3), ('CO (Res)', 1), ('CO (Comm)', 1)]
-    [info] Taunton: 141 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
+    [info] Taunton: tipos nas 200 linhas lidas: [('RESI.', 53), ('PLUMB.', 53), ('ELECT.', 46), ('GAS', 38), ('COMM.', 5), ('SHT MTL', 3), ('CO (Res)', 1), ('CO (Comm)', 1)]
+    [info] Taunton: 142 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
     [info] Taunton: data mais recente encontrada: 2026-10-07
 
 ### Falmouth — confirmed
@@ -631,7 +633,7 @@ POST https://permiteyes.us/attleboro/ajax/getbuildingpublichome.php -> erro HTTP
 - Mensagens da coleta de teste:
     [info] Falmouth: endereço de dados getbuildingpublichome.php (pedido simples); colunas: ['Application', 'Permit', 'Inspection', 'App.', 'Permit', 'COC', 'Insp.', 'Ap. No.', 'Appl. Date', 'Issue Date', 'Unit No.', 'Parcel No.', 'Street No.', 'Street Name', 'Applicant', 'Owner', 'Brief Description', 'Appl. Type', 'Permit Number', 'Appl. Status', 'Att.']
     [info] Falmouth: 21 cabeçalhos para 18 células; cabeçalhos sem dado: ['application', 'inspection']
-    [info] Falmouth: 218994 registros; data no início=2007-10-30, no fim=2026-10-06; mais novos no end
+    [info] Falmouth: 218995 registros; data no início=2007-11-06, no fim=2026-10-07; mais novos no end
     [info] Falmouth: exemplo de linha: {'ap_no': '4857', 'appl_date': '10/30/07', 'parcel_no': '46 01 000 019', 'street_no': '4', 'street_name': 'shoreview ave', 'applicant': 'pratt trustee harold i', 'owner': 'pratt trustee harold i', 'appl_type': 'SFA', 'appl_status': 'CLOSED', 'site_address': '4 shoreview ave'}
     [info] Falmouth: tipos nas 300 linhas lidas: [('ELECT.', 88), ('GAS', 59), ('REP', 54), ('PLUMB.', 39), ('RESI.', 34), ('SHT MTL', 11), ('SIGN', 4), ('TENT', 4), ('FIREALARM', 1), ('COMM.', 1), ('CEP', 1), ('SFA', 1), ('COU', 1), ('ADU', 1)]
     [info] Falmouth: 221 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
@@ -646,8 +648,10 @@ POST https://permiteyes.us/attleboro/ajax/getbuildingpublichome.php -> erro HTTP
 - Endereços de dados candidatos: https://permiteyes.us/berkshire/controller/getvalues_controller.php | https://permiteyes.us/berkshire/publicviewmodal.php
 - Coleta de teste (14 dias): 0 permits. Exemplo: None
 - Mensagens da coleta de teste:
+    [info] Stockbridge: abas de cidades encontradas: [('0', '', 'ajax/getpublichome.php')]
+    [info] Stockbridge: usando town_id=0 ()
     [info] Stockbridge: endereço de dados getpublichome.php (pedido completo); colunas: ['Application', 'Permit', 'CO', 'COC', 'Inspection', 'Sign Off', 'Ap. No.', 'Parcel Id', 'Appl. Date', 'Issue Date', 'Street No', 'Street Name', 'Applicant', 'Owner', 'Appl. Type', 'Permit Number', 'Appl. Status', '']
-    [info] Stockbridge: 0 registros; data no início=?, no fim=?; mais novos no start
+    [info] Stockbridge: 0 registros; data no início=?, no fim=?; mais novos no end
     [info] Stockbridge: tipos nas 0 linhas lidas: []
 
 ### Arlington — to_investigate
