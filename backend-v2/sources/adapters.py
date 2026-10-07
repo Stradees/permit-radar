@@ -5,7 +5,7 @@ Cada cidade vira só uma entrada em registry.yaml. Os adapters sabem conversar
 com a plataforma (CKAN, Socrata, ArcGIS) e traduzem os campos de cada cidade
 para o formato padrão do Permit Radar.
 
-Versão 2.8 (PermitEyes: alinhamento, town_id e direção robusta): Worcester (ArcGIS) e relatórios em arquivo; filtra permits de especialidade, classifica o tipo de obra
+Versão 2.9 (PermitEyes: ordenação por data e town_id em UUID): Worcester (ArcGIS) e relatórios em arquivo; filtra permits de especialidade, classifica o tipo de obra
 (New Construction / Addition / Renovation / Demolition) e descobre colunas sozinho.
 Para ver colunas e tipos de permit no log, defina PERMIT_DEBUG=1.
 """
@@ -640,7 +640,7 @@ class PermitEyesAdapter(BaseAdapter):
                 data[f"columns[{i}][search][value]"] = ""
                 data[f"columns[{i}][search][regex]"] = "false"
             data["order[0][column]"] = self._order_col
-            data["order[0][dir]"] = "asc"
+            data["order[0][dir]"] = self._order_dir
         return data
 
     def _post(self, url: str, start: int, length: int, full: bool | None = None) -> dict:
@@ -678,10 +678,10 @@ class PermitEyesAdapter(BaseAdapter):
         for m in re.finditer(r"<[^>]*data-town-id=[^>]*>", page, re.I):
             tag = m.group(0)
             inner = page[m.end(): m.end() + 80].split("<")[0]
-            tid = re.search(r"data-town-id=[\"']?(\d+)", tag, re.I)
+            tid = re.search(r"data-town-id=[\"']?([\w-]+)", tag, re.I)
             url = re.search(r"data-url=[\"']([^\"']+)", tag, re.I)
             text = self._clean(inner)
-            title = re.search(r"(?:title|data-town-name|aria-label)=[\"']([^\"']+)", tag, re.I)
+            title = re.search(r"(?:title|data-town-name|aria-label)=[\"']([^\"']+)", tag + page[m.end(): m.end() + 200].split("</a>")[0], re.I)
             if tid:
                 tabs.append({"id": tid.group(1), "url": url.group(1) if url else None,
                              "name": (title.group(1) if title else text)})
@@ -804,6 +804,7 @@ class PermitEyesAdapter(BaseAdapter):
 
         self._ncols = max([len(h) for h in tables.values()] or [20])
         self._order_col = 0
+        self._order_dir = "asc"
         self._full = False
         url = js0 = None
         tried = []
@@ -840,6 +841,20 @@ class PermitEyesAdapter(BaseAdapter):
             last_js = self._post(url, max(total - 25, 0), 25)
             sample += [[self._clean(c) for c in r] for r in last_js.get("data", [])]
         aligned = self._build_alignment(keys, sample)
+
+        ordered = False
+        if self._full and not newest_at and "issue_date" in aligned:
+            self._order_col, self._order_dir = aligned.index("issue_date"), "desc"
+            try:
+                chk = self._to_dicts(self._post(url, 0, 25).get("data", []), keys, aligned)
+                vals = [d for d in (self._row_date(r) for r in chk) if d]
+                if len(vals) >= 3 and vals == sorted(vals, reverse=True):
+                    newest_at, ordered = "start", True
+                    print(f"[info] {self.city}: ordenação por Issue Date (decrescente) confirmada; mais novos no início")
+            except Exception as e:  # noqa: BLE001
+                print(f"[info] {self.city}: ordenação por data não funcionou ({e})")
+            if not ordered:
+                self._order_col, self._order_dir = 0, "asc"
 
         first = self._to_dicts(js0.get("data", []), keys, aligned)
         if not newest_at:

@@ -383,16 +383,16 @@ states:
         source_type: permiteyes
         status: experimental
         access: search_by_address_or_record
-        portal_url: "https://permiteyes.us/berkshire/publicview.php"
+        portal_url: "https://permiteyes.us/berkshire/stockbridgepublicview.php"
         info_url: "https://www.stockbridge-ma.gov/building-inspector/page/permiteyes-how"
         config:
-          portal_url: "https://permiteyes.us/berkshire/publicview.php"
+          portal_url: "https://permiteyes.us/berkshire/stockbridgepublicview.php"
           page_size: 100
           max_pages: 5
           town_name: "Stockbridge"
         field_map: {}
-        source_link: "https://permiteyes.us/berkshire/publicview.php"
-        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Região Berkshire."
+        source_link: "https://permiteyes.us/berkshire/stockbridgepublicview.php"
+        notes: "PermitEyes Public View (Berkshire). Cada cidade tem sua própria página (<cidade>publicview.php); este endereço segue o padrão de Great Barrington e ainda precisa ser confirmado."
 
 
 
