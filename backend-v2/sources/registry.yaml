@@ -244,7 +244,7 @@ states:
 
       - name: Hingham
         source_type: permiteyes
-        status: experimental
+        status: confirmed
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/hingham/publicview.php"
         info_url: "https://www.hingham-ma.gov/577/View"
@@ -255,7 +255,7 @@ states:
           ajax_urls: ["ajax/getbuildingpublichome.php"]
         field_map: {}
         source_link: "https://permiteyes.us/hingham/publicview.php"
-        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). A tela traz Applicant, Owner e descrição."
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Testada em 06/10: 54 permits em 14 dias, sem valor nem construtora (a tela não mostra)."
 
 
 
@@ -269,6 +269,7 @@ states:
           portal_url: "https://permiteyes.us/attleboro/publicview.php"
           page_size: 100
           max_pages: 5
+          ajax_urls: ["ajax/getpublichome.php"]
         field_map: {}
         source_link: "https://permiteyes.us/attleboro/publicview.php"
         probe: true
@@ -344,7 +345,7 @@ states:
 
       - name: Taunton
         source_type: permiteyes
-        status: experimental
+        status: confirmed
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/taunton/publicview.php"
         info_url: "https://www.taunton-ma.gov/169/Online-Building-Permits"
@@ -355,13 +356,13 @@ states:
           ajax_urls: ["ajax/getpublicview.php"]
         field_map: {}
         source_link: "https://permiteyes.us/taunton/publicview.php"
-        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). A tela traz Contractor Name e Estimated Cost."
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Testada em 06/10: 59 permits em 14 dias, com construtora e valor."
 
 
 
       - name: Falmouth
         source_type: permiteyes
-        status: experimental
+        status: confirmed
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/falmouth/publicview.php"
         info_url: "https://www.falmouthma.gov/313/Online-Permitting"
@@ -372,7 +373,7 @@ states:
           ajax_urls: ["ajax/getbuildingpublichome.php"]
         field_map: {}
         source_link: "https://permiteyes.us/falmouth/publicview.php"
-        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Endereço de dados provável: getbuildingpublichome."
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Testada em 06/10: 99 permits em 14 dias, sem valor nem construtora (a tela não mostra)."
 
 
 

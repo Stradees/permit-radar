@@ -66,12 +66,13 @@ EMPTY_VALUES = {"n/a", "na", "none", "null", "-", "--", "unknown", "user", ""}
 INCLUDE_TYPE_RE = re.compile(
     r"(building|bldg|short form|long form|erect|new construction|foundation|alteration|"
     r"addition|demolition|remodel|renovation|construction|roof|siding|residential|commercial|"
-    r"deck|accessory|adu|garage|carport|restore after fire|resi|comm\b|bldg|demo)", re.I)
+    r"deck|accessory|adu|garage|carport|restore after fire|resi|comm\b|bldg|demo|\bsf[ad]\b|\bmfd\b)", re.I)
 EXCLUDE_TYPE_RE = re.compile(
     r"\b(amendment|certificate|electrical|plumbing|gas|mechanical|sheet metal|fire alarms?|"
     r"low voltage|sprinkler|signs?|occupancy|excavation|asbestos|tents?|dumpster|food|tobacco|"
     r"insulation|stove|antenna|zoning|crowd|carnival|billboard|turbine|pool|fence|retaining|"
-    r"shed|change of use|temporary|moving)\b|plumb|elec\b|elec\.|sheet|chim\.", re.I)
+    r"shed|change of use|temporary|moving)\b|plumb|elect|sheet|shtmtl|sht mtl|chim\.|firealarm|"
+    r"\bco\b|\bcoc\b|\bcou\b", re.I)
 DESC_INCLUDE_RE = re.compile(
     r"\b(roof\w*|re-?roof\w*|siding|addition|deck|remodel\w*|renovat\w*|demoli\w*|garage|foundation|"
     r"porch|sunroom|dormer|kitchen|bath\w*|windows?|new (?:single|two|three|multi|dwelling|home|house|building|construction)|"
@@ -223,6 +224,13 @@ class BaseAdapter:
             clean = {k: v for k, v in raw.items() if k != "_dataset_label"}
             for std_field in self.STANDARD_FIELDS:
                 rec[std_field] = self._pick(clean, std_field)
+            if isinstance(rec.get("contractor"), str) and "," in rec["contractor"]:
+                parts, seen = [], set()
+                for part in (x.strip() for x in rec["contractor"].split(",")):
+                    if part and part.lower() not in seen:
+                        seen.add(part.lower())
+                        parts.append(part)
+                rec["contractor"] = ", ".join(parts)
             rec["estimated_value"] = self._to_float(rec["estimated_value"])
             # Valores como $0,01 ou $1 são marcadores administrativos, não o custo real da obra.
             if rec["estimated_value"] is not None and rec["estimated_value"] < 10:
@@ -618,18 +626,45 @@ class PermitEyesAdapter(BaseAdapter):
         sess.headers.update({"X-Requested-With": "XMLHttpRequest", "Referer": view_url})
         return sess
 
-    def _post(self, url: str, start: int, length: int) -> dict:
-        data = {"draw": 1, "start": start, "length": length, "search[value]": ""}
+    def _params(self, start: int, length: int, full: bool) -> dict:
+        data = {"draw": 1, "start": start, "length": length, "search[value]": "", "search[regex]": "false"}
+        data.update(self.config.get("extra_params") or {})
+        if full:   # versões mais novas do sistema exigem a lista de colunas e a ordenação
+            for i in range(self._ncols):
+                data[f"columns[{i}][data]"] = i
+                data[f"columns[{i}][name]"] = ""
+                data[f"columns[{i}][searchable]"] = "true"
+                data[f"columns[{i}][orderable]"] = "true"
+                data[f"columns[{i}][search][value]"] = ""
+                data[f"columns[{i}][search][regex]"] = "false"
+            data["order[0][column]"] = self._order_col
+            data["order[0][dir]"] = "asc"
+        return data
+
+    def _post(self, url: str, start: int, length: int, full: bool | None = None) -> dict:
+        full = self._full if full is None else full
         last = None
         for attempt in range(3):
             try:
-                resp = self.sess.post(url, data=data, timeout=60)
+                resp = self.sess.post(url, data=self._params(start, length, full), timeout=60, allow_redirects=False)
+                if 300 <= resp.status_code < 400:
+                    raise RuntimeError(f"redirecionou para {resp.headers.get('Location', '?')[:60]} (exige sessão/login)")
                 if resp.status_code >= 400:
                     raise RuntimeError(f"HTTP {resp.status_code} :: {' '.join(resp.text[:100].split())}")
-                js = resp.json()
+                try:
+                    js = resp.json()
+                except ValueError:
+                    visible = re.sub(r"<(script|style)[^>]*>.*?</\1>", "", resp.text, flags=re.S | re.I)
+                    txt = " ".join(re.sub(r"<[^>]+>", " ", visible).split())[:160]
+                    raise RuntimeError(f"resposta não é JSON :: {txt}")
                 if not isinstance(js, dict) or "data" not in js:
                     raise RuntimeError("resposta sem o campo data")
                 return js
+            except RuntimeError as e:
+                last = e
+                if "redirecionou" in str(e) or "HTTP 4" in str(e):
+                    break
+                time.sleep(2 * (attempt + 1))
             except Exception as e:  # noqa: BLE001
                 last = e
                 time.sleep(2 * (attempt + 1))
@@ -723,26 +758,32 @@ class PermitEyesAdapter(BaseAdapter):
             if ep not in endpoints and not re.search(r"attach|modal|inspect|check", ep, re.I):
                 endpoints.append(ep)
 
+        self._ncols = max([len(h) for h in tables.values()] or [20])
+        self._order_col = 0
+        self._full = False
         url = js0 = None
         tried = []
         for ep in endpoints:
-            full = urljoin(view_url, ep)
-            try:
-                js0 = self._post(full, 0, 25)
-            except Exception as e:  # noqa: BLE001
-                tried.append(f"{ep} -> {e}")
-                continue
-            if js0.get("data") or js0.get("recordsTotal"):
-                url = full
+            full_url = urljoin(view_url, ep)
+            for mode in (False, True):      # primeiro o pedido simples; depois o completo do DataTables
+                try:
+                    js0 = self._post(full_url, 0, 25, full=mode)
+                except Exception as e:  # noqa: BLE001
+                    tried.append(f"{ep} ({'completo' if mode else 'simples'}) -> {e}")
+                    continue
+                if js0.get("data") or js0.get("recordsTotal"):
+                    url, self._full = full_url, mode
+                    break
+                tried.append(f"{ep} ({'completo' if mode else 'simples'}) -> vazio")
+            if url:
                 break
-            tried.append(f"{ep} -> vazio")
         if not url:
-            for t in tried[:8]:
+            for t in tried[:10]:
                 print(f"[info] {self.city}: tentativa {t}")
             raise RuntimeError(f"nenhum endereço de dados respondeu ({len(tried)} tentativas; veja as mensagens)")
 
         heads = self._pick_headers(tables, url)
-        print(f"[info] {self.city}: endereço de dados {url.split('/')[-1]}; colunas: {heads}")
+        print(f"[info] {self.city}: endereço de dados {url.split('/')[-1]} (pedido {'completo' if self._full else 'simples'}); colunas: {heads}")
         if not heads:
             raise RuntimeError("não encontrei os nomes das colunas na página")
         keys = [_norm_header(h) or f"col{i}" for i, h in enumerate(heads)]
