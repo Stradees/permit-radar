@@ -116,7 +116,7 @@
     "owner": "morris richard c & mary r",
     "applicant": "dowling corporation",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -575,7 +575,7 @@
     "owner": "richard taglienti",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -660,7 +660,7 @@
     "owner": "dowdall bruce a & christine m",
     "applicant": "david arrowsmith",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -847,7 +847,7 @@
     "owner": "barker, bethany m & nicholson, daniel",
     "applicant": "darren shepard",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -864,7 +864,7 @@
     "owner": "mclernon family trust",
     "applicant": "darren shepard",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -915,7 +915,7 @@
     "owner": "terry shaw",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Concord",
@@ -1017,7 +1017,7 @@
     "owner": "kennedy-donovan center inc",
     "applicant": "kirolos habib",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -1034,7 +1034,7 @@
     "owner": "fiske ronald w & kim m",
     "applicant": "sunrun installation services / emmanuel logakis",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -1051,7 +1051,7 @@
     "owner": "delucia john & huynh justin phuong",
     "applicant": "richard lema jr",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -1068,7 +1068,7 @@
     "owner": "suttie james j & danielle m",
     "applicant": "david paulhus (paulhus bros. floorcovering, inc.)",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -1085,7 +1085,7 @@
     "owner": null,
     "applicant": "brian k lawson",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -1102,7 +1102,7 @@
     "owner": null,
     "applicant": "dennis condron",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Boston",
@@ -2581,7 +2581,7 @@
     "owner": "town of north attleborough",
     "applicant": "michael biszko iii",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -2598,7 +2598,7 @@
     "owner": "olson marlo d & cheryl a",
     "applicant": "glynn norgan",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -2615,7 +2615,7 @@
     "owner": "michaud norman w & shannon",
     "applicant": "brian waterman",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -2632,7 +2632,7 @@
     "owner": "allan litchfield",
     "applicant": "scott howarth",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -2700,7 +2700,7 @@
     "owner": "flanagan charles e",
     "applicant": "romain strecker",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -2768,7 +2768,7 @@
     "owner": "chronicle delroy h & debra f",
     "applicant": "shane mcguire",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -2785,7 +2785,7 @@
     "owner": "garcia alvaro r & filomena s",
     "applicant": "jamie stefanini",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -2819,7 +2819,7 @@
     "owner": "troy simonds",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -2836,7 +2836,7 @@
     "owner": "scott doughman",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Concord",
@@ -2904,7 +2904,7 @@
     "owner": "hecky, jonathan william",
     "applicant": "thomas janowski",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -2921,7 +2921,7 @@
     "owner": "maystar realty corp.",
     "applicant": "mark lightbody",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -2938,7 +2938,7 @@
     "owner": null,
     "applicant": "james dimopoulos - revise",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -2955,7 +2955,7 @@
     "owner": null,
     "applicant": "johnny mieczkowski",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -2972,7 +2972,7 @@
     "owner": null,
     "applicant": "david moresi",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -2989,7 +2989,7 @@
     "owner": null,
     "applicant": "timothy boody",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -3006,7 +3006,7 @@
     "owner": null,
     "applicant": "addison lopes",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -3023,7 +3023,7 @@
     "owner": null,
     "applicant": "glynn norgan",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Stockbridge",
@@ -3040,7 +3040,7 @@
     "owner": null,
     "applicant": "jason smegal",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Boston",
@@ -4927,7 +4927,7 @@
     "owner": "denner gomes",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -4944,7 +4944,7 @@
     "owner": "bowditch christopher r",
     "applicant": "keil ellis",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -4961,7 +4961,7 @@
     "owner": "manney, lisa, trustee",
     "applicant": "romain strecker",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -5012,7 +5012,7 @@
     "owner": "berthelette, joshua",
     "applicant": "caio torres",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -5046,7 +5046,7 @@
     "owner": "shane dorsey",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Concord",
@@ -5148,7 +5148,7 @@
     "owner": null,
     "applicant": "craig baskin",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -5165,7 +5165,7 @@
     "owner": null,
     "applicant": "craig baskin",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -5182,7 +5182,7 @@
     "owner": null,
     "applicant": "jenniffer fanska",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -5199,7 +5199,7 @@
     "owner": null,
     "applicant": "craig baskin",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -5216,7 +5216,7 @@
     "owner": null,
     "applicant": "michael chaves",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -5233,7 +5233,7 @@
     "owner": null,
     "applicant": "michael pereira",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -5250,7 +5250,7 @@
     "owner": null,
     "applicant": "craig baskin",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -5267,7 +5267,7 @@
     "owner": null,
     "applicant": "craig baskin",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Great Barrington",
@@ -5284,7 +5284,7 @@
     "owner": null,
     "applicant": "robert hunter",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Great Barrington",
@@ -5301,7 +5301,7 @@
     "owner": null,
     "applicant": "alliance home improvement inc",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Great Barrington",
@@ -5318,7 +5318,7 @@
     "owner": null,
     "applicant": "shawn galiley",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Great Barrington",
@@ -5335,7 +5335,7 @@
     "owner": null,
     "applicant": "christopher nelson",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Great Barrington",
@@ -5352,7 +5352,7 @@
     "owner": null,
     "applicant": "jose nugra",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Great Barrington",
@@ -5369,7 +5369,7 @@
     "owner": null,
     "applicant": "robert hunter",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Great Barrington",
@@ -5386,7 +5386,7 @@
     "owner": null,
     "applicant": "philip timpane",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Stockbridge",
@@ -5403,7 +5403,7 @@
     "owner": null,
     "applicant": "new england solar & green solutions, inc.",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Boston",
@@ -6950,7 +6950,7 @@
     "owner": "sar rithy sivanthouen",
     "applicant": "walter r. colwell",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -7035,7 +7035,7 @@
     "owner": "pombriant richard r",
     "applicant": "richard r pombriant",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -7103,7 +7103,7 @@
     "owner": "robert morris and amanda kay",
     "applicant": "tiago goncalves",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7120,7 +7120,7 @@
     "owner": null,
     "applicant": "robert j decker iv iv",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7137,7 +7137,7 @@
     "owner": null,
     "applicant": "jason smegal",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7154,7 +7154,7 @@
     "owner": null,
     "applicant": "nathan sosnicki",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7171,7 +7171,7 @@
     "owner": null,
     "applicant": "pravia daniel l",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7188,7 +7188,7 @@
     "owner": null,
     "applicant": "sunrun installation services",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7205,7 +7205,7 @@
     "owner": null,
     "applicant": "wesley couture",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7222,7 +7222,7 @@
     "owner": null,
     "applicant": "sunrite solar llc",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7239,7 +7239,7 @@
     "owner": null,
     "applicant": "craig baskin",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7256,7 +7256,7 @@
     "owner": null,
     "applicant": "sunrun installation services",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7273,7 +7273,7 @@
     "owner": null,
     "applicant": "proedge remodeling inc.",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7290,7 +7290,7 @@
     "owner": null,
     "applicant": "vasilie kukharchuk",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7307,7 +7307,7 @@
     "owner": null,
     "applicant": "michael pereira",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7324,7 +7324,7 @@
     "owner": null,
     "applicant": "sunrun installation services",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -7341,7 +7341,7 @@
     "owner": null,
     "applicant": "flavia hulett",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Stockbridge",
@@ -7358,7 +7358,7 @@
     "owner": null,
     "applicant": "thom whaley",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Boston",
@@ -9551,7 +9551,7 @@
     "owner": "cody johnson",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -9568,7 +9568,7 @@
     "owner": "robert leblanc",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -9585,7 +9585,7 @@
     "owner": "lori lisker",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -9636,7 +9636,7 @@
     "owner": "truxton ronald d",
     "applicant": "dominic barese",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9653,7 +9653,7 @@
     "owner": "petter thy sek",
     "applicant": "peter thy sek",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9670,7 +9670,7 @@
     "owner": "haskell farms llc",
     "applicant": "richard grassley",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9704,7 +9704,7 @@
     "owner": "sullivan timothy",
     "applicant": "timothy sullivan",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9738,7 +9738,7 @@
     "owner": "nicolette burchill",
     "applicant": "sunrun installation services/emmanuel logakis",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9755,7 +9755,7 @@
     "owner": "bassignani michael s",
     "applicant": "benjamin connell",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9772,7 +9772,7 @@
     "owner": "perigard danielle r & beaton jeffrey a",
     "applicant": "jarret kazanjian innovative roofing nh",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -9789,7 +9789,7 @@
     "owner": "juliana silva",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Concord",
@@ -9857,7 +9857,7 @@
     "owner": "attleboro city of",
     "applicant": "joseph solomon",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9874,7 +9874,7 @@
     "owner": "barradas, michael e. & linda r. (trustees)",
     "applicant": "tiago goncalves",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9891,7 +9891,7 @@
     "owner": "plizga meredith a",
     "applicant": "sunrun installation services/emmanuel logakis",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9908,7 +9908,7 @@
     "owner": "monica & james kim",
     "applicant": "mark zuschlag",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9925,7 +9925,7 @@
     "owner": "coleman john & lisa",
     "applicant": "sunrun installation services/emmanuel logakis",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9942,7 +9942,7 @@
     "owner": "fellini peter j & laura j",
     "applicant": "william colt",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9959,7 +9959,7 @@
     "owner": "mayer, derek p jr & phillips, kaela m.",
     "applicant": "sunrun installation services/emmanuel logakis",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9976,7 +9976,7 @@
     "owner": "gutierrez sigifredo",
     "applicant": "sunrun installation services/emmanuel logakis",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -9993,7 +9993,7 @@
     "owner": "village at red oak llc",
     "applicant": "steven turcotte",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -10010,7 +10010,7 @@
     "owner": "hamel ronald h & patricia e",
     "applicant": "kenneth capobianco",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -10027,7 +10027,7 @@
     "owner": null,
     "applicant": "julio c de assis",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -10044,7 +10044,7 @@
     "owner": null,
     "applicant": "jason smegal",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Great Barrington",
@@ -10061,7 +10061,7 @@
     "owner": null,
     "applicant": "myles fonfield",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Boston",
@@ -11948,7 +11948,7 @@
     "owner": "phillips, annette",
     "applicant": "catherine a sweeney",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -11965,7 +11965,7 @@
     "owner": "parmar cyprian",
     "applicant": "eugeniy kuntsevskiy",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -11999,7 +11999,7 @@
     "owner": "matthew puglia",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Concord",
@@ -12033,7 +12033,7 @@
     "owner": "bator susan j",
     "applicant": "donald cerrone",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -12050,7 +12050,7 @@
     "owner": "104 north main street llc",
     "applicant": "sonia cardona",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -12067,7 +12067,7 @@
     "owner": "siddiqui khalid & asma",
     "applicant": "caio torres",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -12084,7 +12084,7 @@
     "owner": "james connolly",
     "applicant": "anthony procaccini",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -12101,7 +12101,7 @@
     "owner": "104 north main street llc",
     "applicant": "patrick byrne",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -12118,7 +12118,7 @@
     "owner": "goslin cheryl l & glenn",
     "applicant": "jay bellavance",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -12135,7 +12135,7 @@
     "owner": "james connolly",
     "applicant": "anthony procaccini",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -12152,7 +12152,7 @@
     "owner": null,
     "applicant": "kaitlin brooks",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -12169,7 +12169,7 @@
     "owner": null,
     "applicant": "sunrun installation services /robert j decker",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -12186,7 +12186,7 @@
     "owner": null,
     "applicant": "david j tierney jr inc",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -12203,7 +12203,7 @@
     "owner": null,
     "applicant": "adam c wood",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Great Barrington",
@@ -12220,7 +12220,7 @@
     "owner": null,
     "applicant": "samuel vansant",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Great Barrington",
@@ -12237,7 +12237,7 @@
     "owner": null,
     "applicant": "samuel vansant",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Boston",
@@ -14073,7 +14073,7 @@
     "owner": "malone john & kelly",
     "applicant": "freddy campoverde",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -14090,7 +14090,7 @@
     "owner": "crowell, ryan e & francisca v",
     "applicant": "darren shepard",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -14294,7 +14294,7 @@
     "owner": "et property group llc",
     "applicant": "et property group llc",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -14311,7 +14311,7 @@
     "owner": null,
     "applicant": "jack carroll",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -14328,7 +14328,7 @@
     "owner": null,
     "applicant": "steve morrison",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -14345,7 +14345,7 @@
     "owner": null,
     "applicant": "michael pereira",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -14362,7 +14362,7 @@
     "owner": null,
     "applicant": "james dimopoulos - revise",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -14379,7 +14379,7 @@
     "owner": null,
     "applicant": "joshua borozny",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -14396,7 +14396,7 @@
     "owner": null,
     "applicant": "anthony martin",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -14413,7 +14413,7 @@
     "owner": null,
     "applicant": "robert leblanc",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Great Barrington",
@@ -14430,7 +14430,7 @@
     "owner": null,
     "applicant": "jason smegal",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Stockbridge",
@@ -14447,7 +14447,7 @@
     "owner": null,
     "applicant": "jason smegal",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Stockbridge",
@@ -14464,7 +14464,7 @@
     "owner": null,
     "applicant": "anthony cunagin",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Stockbridge",
@@ -14481,7 +14481,7 @@
     "owner": null,
     "applicant": "john salvini",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Boston",
@@ -14600,7 +14600,7 @@
     "owner": "reggie michel",
     "applicant": "sunrun installation services/emmanuel logakis",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -14617,7 +14617,7 @@
     "owner": "harrop, christopher & laura",
     "applicant": "darren shepard",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Boston",
@@ -16079,7 +16079,7 @@
     "owner": "ing fitness inc (michael inglese)",
     "applicant": "ing fitness inc (michael inglese)",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -16096,7 +16096,7 @@
     "owner": "joan m hallal trust",
     "applicant": "mayelin a payano & jacqueline pena",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -16113,7 +16113,7 @@
     "owner": "tevin hagemoser",
     "applicant": "ryan rego",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -16130,7 +16130,7 @@
     "owner": null,
     "applicant": "jason smegal",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -16147,7 +16147,7 @@
     "owner": null,
     "applicant": "jason smegal",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -16164,7 +16164,7 @@
     "owner": null,
     "applicant": "jason smegal",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -16181,7 +16181,7 @@
     "owner": null,
     "applicant": "joshua borozny",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -16198,7 +16198,7 @@
     "owner": null,
     "applicant": "yamil brito",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -16215,7 +16215,7 @@
     "owner": null,
     "applicant": "savkat permits",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -16232,7 +16232,7 @@
     "owner": null,
     "applicant": "steve morrison",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -16249,7 +16249,7 @@
     "owner": null,
     "applicant": "trinity solar",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -16266,7 +16266,7 @@
     "owner": null,
     "applicant": "jason smegal",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -16283,7 +16283,7 @@
     "owner": null,
     "applicant": "jason smegal",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Stockbridge",
@@ -16300,7 +16300,7 @@
     "owner": null,
     "applicant": "ryan pelletier",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Stockbridge",
@@ -16317,7 +16317,7 @@
     "owner": null,
     "applicant": "leander dealmeida",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Boston",
@@ -16997,7 +16997,7 @@
     "owner": "cjm builders inc",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -17014,7 +17014,7 @@
     "owner": "steve knight",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -17031,7 +17031,7 @@
     "owner": "brian zampell",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Concord",
@@ -17167,7 +17167,7 @@
     "owner": "shawn livingstone",
     "applicant": "global home exteriors",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -17184,7 +17184,7 @@
     "owner": "oldfield sherri",
     "applicant": "sherri dumont",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -17201,7 +17201,7 @@
     "owner": "holt james h jr & thomas j",
     "applicant": "jose a ramos",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -17218,7 +17218,7 @@
     "owner": "young zachary b & amy j",
     "applicant": "andre moraes",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -17235,7 +17235,7 @@
     "owner": "goulet ernest h edmond j & eugene",
     "applicant": "ashish patel",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -17252,7 +17252,7 @@
     "owner": "kotak jonathan & moran janelle",
     "applicant": "william penny",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -17269,7 +17269,7 @@
     "owner": null,
     "applicant": "joshua borozny",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -17286,7 +17286,7 @@
     "owner": null,
     "applicant": "jason smegal",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -17303,7 +17303,7 @@
     "owner": null,
     "applicant": "sarah newton revocable trust",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -17320,7 +17320,7 @@
     "owner": null,
     "applicant": "christopher battaini",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -17337,7 +17337,7 @@
     "owner": null,
     "applicant": "christopher battaini",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -17354,7 +17354,7 @@
     "owner": null,
     "applicant": "roger gavin iii",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -17371,7 +17371,7 @@
     "owner": null,
     "applicant": "jason smegal",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Great Barrington",
@@ -17388,7 +17388,7 @@
     "owner": null,
     "applicant": "anthony troiano",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Stockbridge",
@@ -17405,7 +17405,7 @@
     "owner": null,
     "applicant": "glynn norgan",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Cambridge",
@@ -17881,7 +17881,7 @@
     "owner": "neeeco",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -17966,7 +17966,7 @@
     "owner": "bassett steven d.",
     "applicant": "scott finnegan",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -17983,7 +17983,7 @@
     "owner": "fritz carl w & cody lauri a",
     "applicant": "lowe's home centers llc",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -18000,7 +18000,7 @@
     "owner": "dickey martha j and humphreys roderick j",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -18017,7 +18017,7 @@
     "owner": "ken duval",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -18034,7 +18034,7 @@
     "owner": "vincent mclaughlin",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -18051,7 +18051,7 @@
     "owner": "claudio matos",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -18068,7 +18068,7 @@
     "owner": "timothy woodland",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -18085,7 +18085,7 @@
     "owner": "manuel vasconcelos",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -18102,7 +18102,7 @@
     "owner": "raphael oliveira",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -18119,7 +18119,7 @@
     "owner": "freddy campoverde",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -18136,7 +18136,7 @@
     "owner": "adam glenn",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -18153,7 +18153,7 @@
     "owner": "baystateroofers02@gmail.com",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "North Reading",
@@ -18170,7 +18170,7 @@
     "owner": "ana bazilio",
     "applicant": null,
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Concord",
@@ -18306,7 +18306,7 @@
     "owner": "thompson, david e, jr & cheryll",
     "applicant": "thaynna santana rodrigues",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -18323,7 +18323,7 @@
     "owner": "pacheco, lisa",
     "applicant": "brian blanchard",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -18340,7 +18340,7 @@
     "owner": "batkin shannon & serenity",
     "applicant": "maynard construction",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -18357,7 +18357,7 @@
     "owner": "goode, joseph and kelly",
     "applicant": "eugeniy kuntsevskiy",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -18374,7 +18374,7 @@
     "owner": "nevers lois e",
     "applicant": "kyle desautels",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -18391,7 +18391,7 @@
     "owner": "milette brian & kristen",
     "applicant": "eugeniy kuntsevskiy",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Attleboro",
@@ -18408,7 +18408,7 @@
     "owner": "chisholm andrew p & elizabeth t",
     "applicant": "eugeniy kuntsevskiy",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -18425,7 +18425,7 @@
     "owner": null,
     "applicant": "potential energy llc",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -18442,7 +18442,7 @@
     "owner": null,
     "applicant": "robert leblanc",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -18459,7 +18459,7 @@
     "owner": null,
     "applicant": "life saving fire protection inc.",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -18476,7 +18476,7 @@
     "owner": null,
     "applicant": "stephen j bartini",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -18493,7 +18493,7 @@
     "owner": null,
     "applicant": "robert leblanc",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -18510,7 +18510,7 @@
     "owner": null,
     "applicant": "cota kathleen a",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -18527,7 +18527,7 @@
     "owner": null,
     "applicant": "brian leblanc",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Pittsfield",
@@ -18544,7 +18544,7 @@
     "owner": null,
     "applicant": "savkat permits",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Great Barrington",
@@ -18561,7 +18561,7 @@
     "owner": null,
     "applicant": "james dimopoulos - revise",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Stockbridge",
@@ -18578,7 +18578,7 @@
     "owner": null,
     "applicant": "thomas torrico",
     "contractor": null,
-    "category": "Renovation"
+    "category": "Unspecified"
   },
   {
     "source_city": "Cambridge",
