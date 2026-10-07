@@ -141,7 +141,8 @@ def grep_js(code: str, label: str, limit: int = 60) -> list[str]:
                 if k not in shown:
                     shown.add(k)
                     out.append(f"{label}:{k + 1}: {lines[k].strip()[:170]}")
-        elif re.search(r"\bd\.\w+\s*=|getvalues|ajax/\w+\.php", line) and i not in shown:
+        elif re.search(r"\bd\.\w+\s*=|getvalues|ajax/\w+\.php|\burl\s*=|\bvar url\b|SelectedTownId|town_?id|"
+                       r"DeptName\s*=|tableId\s*=|\.php[\"']", line, re.I) and i not in shown:
             shown.add(i)
             out.append(f"{label}:{i + 1}: {line.strip()[:170]}")
         if len(out) >= limit:
@@ -183,8 +184,9 @@ def probe_permiteyes(url: str, endpoints: list[str]) -> list[str]:
                 clean = [[" ".join(re.sub(r"<[^>]+>", " ", str(c)).split()) for c in row] for row in rows]
                 L.append(f"POST {ep} -> HTTP {r.status_code}; recordsTotal={js.get('recordsTotal')}; linhas de exemplo: {clean}")
             except Exception:  # noqa: BLE001
-                L.append(f"POST {ep} -> HTTP {r.status_code} {r.headers.get('content-type', '')[:30]} (sem JSON) :: "
-                         f"{' '.join(r.text[:150].split())}")
+                vis = re.sub(r"<(script|style)[^>]*>.*?</\1>", "", r.text, flags=re.S | re.I)
+                vis = " ".join(re.sub(r"<[^>]+>", " ", vis).split())[:250]
+                L.append(f"POST {ep} -> HTTP {r.status_code} (sem JSON) texto da página: {vis}")
         except Exception as e:  # noqa: BLE001
             L.append(f"POST {ep} -> erro {str(e)[:100]}")
     return L[:60]
