@@ -121,7 +121,6 @@ states:
           max_pages: 5
         field_map: {}
         source_link: "https://permiteyes.us/northreading/publicview.php"
-        probe: true
         notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Permits ativos desde set/2019. Testada em 06/10: 30 permits em 14 dias, sem valor nem construtora."
 
 
@@ -138,15 +137,14 @@ states:
           max_pages: 5
         field_map: {}
         source_link: "https://permiteyes.us/concord/publicview.php"
-        probe: true
         notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Testada em 07/10: 44 permits em 14 dias, sem valor nem construtora. Pedido ordenado por Issue Date."
 
 
 
       - name: Mansfield
         source_type: permiteyes
-        status: experimental
-        access: search_by_address_or_record
+        status: login_required
+        access: login_required
         portal_url: "https://permiteyes.us/mansfield/publicview.php"
         info_url: "https://www.mansfieldma.com/156/Building-Department"
         config:
@@ -155,14 +153,13 @@ states:
           max_pages: 5
         field_map: {}
         source_link: "https://permiteyes.us/mansfield/publicview.php"
-        probe: true
         notes: "PermitEyes Public View. Testado em 07/10: os endereços de dados redirecionam para o login (/mansfield/login.php) ou dão erro 500, então a consulta pública parece exigir sessão. O site da prefeitura também bloqueia acesso automático."
 
 
 
       - name: Pittsfield
         source_type: permiteyes
-        status: experimental
+        status: confirmed
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/berkshire/publicview.php"
         info_url: "https://www.pittsfieldma.gov/226/Public-View---Permit-Records"
@@ -174,14 +171,13 @@ states:
           town_name: "Pittsfield"
         field_map: {}
         source_link: "https://permiteyes.us/berkshire/publicview.php"
-        probe: true
-        notes: "PermitEyes Public View (Berkshire; cada cidade tem página e town_id próprios). Em 07/10 a coluna Owner vinha sem dado e deslocava os campos; corrigido com drop_headers e aguardando novo teste."
+        notes: "PermitEyes Public View (Berkshire; cada cidade tem página e town_id próprios; a coluna Owner vem sem dado, por isso drop_headers). Testada em 07/10: 68 permits em 14 dias, sem valor nem construtora."
 
 
 
       - name: Great Barrington
         source_type: permiteyes
-        status: experimental
+        status: confirmed
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/berkshire/greatbarringtonpublicview.php"
         info_url: "https://greatbarringtonma.civicpluswebopen.com/building-department/pages/online-permitting"
@@ -193,8 +189,7 @@ states:
           town_name: "Great Barrington"
         field_map: {}
         source_link: "https://permiteyes.us/berkshire/greatbarringtonpublicview.php"
-        probe: true
-        notes: "PermitEyes Public View (Berkshire; cada cidade tem página e town_id próprios). Em 07/10 a coluna Owner vinha sem dado e deslocava os campos; corrigido com drop_headers e aguardando novo teste."
+        notes: "PermitEyes Public View (Berkshire; cada cidade tem página e town_id próprios; a coluna Owner vem sem dado, por isso drop_headers). Testada em 07/10: 13 permits em 14 dias, sem valor nem construtora."
 
 
 
@@ -276,7 +271,6 @@ states:
           ajax_urls: ["ajax/getpublichome.php"]
         field_map: {}
         source_link: "https://permiteyes.us/attleboro/publicview.php"
-        probe: true
         notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Existe também o arquivo antigo (permiteyes.net)."
 
 
@@ -383,7 +377,7 @@ states:
 
       - name: Stockbridge
         source_type: permiteyes
-        status: experimental
+        status: confirmed
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/berkshire/stockbridgepublicview.php"
         info_url: "https://www.stockbridge-ma.gov/building-inspector/page/permiteyes-how"
@@ -395,7 +389,7 @@ states:
           town_name: "Stockbridge"
         field_map: {}
         source_link: "https://permiteyes.us/berkshire/stockbridgepublicview.php"
-        notes: "PermitEyes Public View (Berkshire; cada cidade tem página e town_id próprios). Em 07/10 a coluna Owner vinha sem dado e deslocava os campos; corrigido com drop_headers e aguardando novo teste."
+        notes: "PermitEyes Public View (Berkshire; cada cidade tem página e town_id próprios; a coluna Owner vem sem dado, por isso drop_headers). Testada em 07/10: 10 permits em 14 dias, sem valor nem construtora."
 
 
 
