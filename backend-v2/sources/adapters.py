@@ -5,7 +5,7 @@ Cada cidade vira só uma entrada em registry.yaml. Os adapters sabem conversar
 com a plataforma (CKAN, Socrata, ArcGIS) e traduzem os campos de cada cidade
 para o formato padrão do Permit Radar.
 
-Versão 2.9 (PermitEyes: ordenação por data e town_id em UUID): Worcester (ArcGIS) e relatórios em arquivo; filtra permits de especialidade, classifica o tipo de obra
+Versão 2.10 (PermitEyes: alinhamento por rua, tipo e número de permit): Worcester (ArcGIS) e relatórios em arquivo; filtra permits de especialidade, classifica o tipo de obra
 (New Construction / Addition / Renovation / Demolition) e descobre colunas sozinho.
 Para ver colunas e tipos de permit no log, defina PERMIT_DEBUG=1.
 """
@@ -600,6 +600,8 @@ class PermitEyesAdapter(BaseAdapter):
     ACTION_KEYS = {"application", "permit", "inspection", "app", "insp", "coc", "att", "co", "sign_off", "details"}
     _DATE = re.compile(r"^\d{1,2}[/-]\d{1,2}[/-]\d{2,4}")
     _MONEY = re.compile(r"^\$?[\d,]+(\.\d+)?$")
+    _STREET = re.compile(r"\b(st|street|ave|avenue|rd|road|dr|drive|ln|lane|way|ct|court|pl|place|blvd|cir|circle|"
+                         r"ter|terrace|hwy|pkwy|sq|square|path|trl|trail)\.?$", re.I)
 
     @staticmethod
     def _clean(cell) -> str:
@@ -726,7 +728,13 @@ class PermitEyesAdapter(BaseAdapter):
         if key == "ap_no":
             return 1.0 if cell.isdigit() else -1.0
         if "permit_number" in key:
-            return 1.0 if re.match(r"^[A-Za-z]{1,6}[-\s]?\d", cell) else -1.0
+            return 1.0 if re.match(r"^[A-Za-z]{0,6}[-\s]?\d", cell) else -1.0
+        if key == "street_name":
+            return 1.0 if self._STREET.search(cell) else 0.0
+        if key == "appl_type":
+            if re.search(r"\d{3,}", cell):
+                return -1.0
+            return 0.6 if re.fullmatch(r"[A-Za-z .()/&-]{2,16}", cell) else -0.3
         if "status" in key:
             return 1.0 if re.fullmatch(r"[A-Za-z .-]{3,20}", cell) else -1.0
         if key == "site_address":
@@ -734,7 +742,13 @@ class PermitEyesAdapter(BaseAdapter):
         if key == "street_no":
             return 0.5 if re.match(r"^\d+\w?$", cell) else -0.5
         if key in ("applicant", "owner", "contractor_name"):
-            return -1.0 if (self._DATE.match(cell) or self._MONEY.match(cell)) else 0.0
+            if self._DATE.match(cell) or self._MONEY.match(cell):
+                return -1.0
+            if self._STREET.search(cell):                       # nome de rua num campo de pessoa
+                return -0.8
+            if re.fullmatch(r"[A-Z][A-Z .()/-]{1,7}", cell):    # sigla de tipo (RESI, ELECT...) num campo de pessoa
+                return -0.6
+            return 0.0
         return 0.0
 
     def _build_alignment(self, keys: list[str], sample_rows: list[list[str]]) -> list[str | None]:
@@ -753,6 +767,12 @@ class PermitEyesAdapter(BaseAdapter):
         if n_cells > H:
             return [None] * (n_cells - H) + list(keys)
         d = H - n_cells
+        forced = [str(x) for x in (self.config.get("drop_headers") or [])]
+        if forced:    # a cidade informa explicitamente quais cabeçalhos não trazem dado
+            kept = [k for k in keys if k not in forced]
+            if len(kept) == n_cells:
+                print(f"[info] {self.city}: cabeçalhos sem dado (definidos no cadastro): {forced}")
+                return kept
         if d > 3:
             return list(keys[H - n_cells:])
         rows = [r for r in sample_rows if len(r) == n_cells][:40]

@@ -128,7 +128,7 @@ states:
 
       - name: Concord
         source_type: permiteyes
-        status: experimental
+        status: confirmed
         access: search_by_address_or_record
         portal_url: "https://permiteyes.us/concord/publicview.php"
         info_url: "https://www.concordma.gov/589/Building-Permit-Information"
@@ -139,7 +139,7 @@ states:
         field_map: {}
         source_link: "https://permiteyes.us/concord/publicview.php"
         probe: true
-        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Building permits emitidos desde 01/01/2021."
+        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Testada em 07/10: 44 permits em 14 dias, sem valor nem construtora. Pedido ordenado por Issue Date."
 
 
 
@@ -170,11 +170,12 @@ states:
           portal_url: "https://permiteyes.us/berkshire/publicview.php"
           page_size: 100
           max_pages: 5
+          drop_headers: ["owner"]   # nas páginas de Berkshire a coluna Owner vem sem dado
           town_name: "Pittsfield"
         field_map: {}
         source_link: "https://permiteyes.us/berkshire/publicview.php"
         probe: true
-        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Região Berkshire (várias cidades na mesma tela); o robots.txt do site da prefeitura não permite, mas o do PermitEyes sim."
+        notes: "PermitEyes Public View (Berkshire; cada cidade tem página e town_id próprios). Em 07/10 a coluna Owner vinha sem dado e deslocava os campos; corrigido com drop_headers e aguardando novo teste."
 
 
 
@@ -188,11 +189,12 @@ states:
           portal_url: "https://permiteyes.us/berkshire/greatbarringtonpublicview.php"
           page_size: 100
           max_pages: 5
+          drop_headers: ["owner"]   # nas páginas de Berkshire a coluna Owner vem sem dado
           town_name: "Great Barrington"
         field_map: {}
         source_link: "https://permiteyes.us/berkshire/greatbarringtonpublicview.php"
         probe: true
-        notes: "PermitEyes Public View (robots.txt permite; consulta sem login). Região Berkshire."
+        notes: "PermitEyes Public View (Berkshire; cada cidade tem página e town_id próprios). Em 07/10 a coluna Owner vinha sem dado e deslocava os campos; corrigido com drop_headers e aguardando novo teste."
 
 
 
@@ -389,10 +391,11 @@ states:
           portal_url: "https://permiteyes.us/berkshire/stockbridgepublicview.php"
           page_size: 100
           max_pages: 5
+          drop_headers: ["owner"]   # nas páginas de Berkshire a coluna Owner vem sem dado
           town_name: "Stockbridge"
         field_map: {}
         source_link: "https://permiteyes.us/berkshire/stockbridgepublicview.php"
-        notes: "PermitEyes Public View (Berkshire). Cada cidade tem sua própria página (<cidade>publicview.php); este endereço segue o padrão de Great Barrington e ainda precisa ser confirmado."
+        notes: "PermitEyes Public View (Berkshire; cada cidade tem página e town_id próprios). Em 07/10 a coluna Owner vinha sem dado e deslocava os campos; corrigido com drop_headers e aguardando novo teste."
 
 
 
