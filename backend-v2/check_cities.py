@@ -156,6 +156,8 @@ def probe_permiteyes(url: str, endpoints: list[str]) -> list[str]:
     code, final, html, err = fetch(url)
     if not html:
         return [f"não consegui abrir {url}: HTTP {code} {err or ''}"]
+    for tag in re.findall(r"<[^>]*data-town-id[^>]*>.{0,50}", html, re.I | re.S)[:14]:
+        L.append("aba de cidade: " + " ".join(tag.split())[:200])
     inline = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", html, re.I | re.S)
     for n, block in enumerate(inline):
         L += grep_js(block, f"script-inline-{n + 1}")

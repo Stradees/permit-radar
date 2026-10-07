@@ -1,6 +1,6 @@
 # Cobertura de permits em Massachusetts
 
-37 cidades cadastradas. Atualizado em 06/10/2026. `health_report.md` traz a verificação ao vivo.
+37 cidades cadastradas. Atualizado em 07/10/2026. `health_report.md` traz a verificação ao vivo.
 
 | Cidade | Situação | Tipo de acesso | Observação |
 | --- | --- | --- | --- |
@@ -8,15 +8,15 @@
 | Cambridge | ✅ No ar (testada) | open_data_api |  |
 | Worcester | ✅ No ar (testada) | open_data_api | Sem valor da obra. Desde ~mai/2026 tipo e contratante quase sempre vêm como N/A (limite da fonte). Servidor limita consultas (o código espera e repete). |
 | Reading | ✅ No ar (testada) | file_report | Relatório mensal em Excel; robots.txt de readingma.gov permite. Testada ao vivo em 06/10 (90 permits em 45 dias) (record, full_address, date_issued, project_cost, dba...). Sem construtor próprio: usa dba/requerente. O portal OpenGov deles não permite coleta. |
+| North Reading | ✅ No ar (testada) | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Permits ativos desde set/2019. Testada em 06/10: 30 permits em 14 dias, sem valor nem construtora. |
 | Hingham | ✅ No ar (testada) | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Testada em 06/10: 54 permits em 14 dias, sem valor nem construtora (a tela não mostra). |
+| Attleboro | ✅ No ar (testada) | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Existe também o arquivo antigo (permiteyes.net). |
 | Taunton | ✅ No ar (testada) | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Testada em 06/10: 59 permits em 14 dias, com construtora e valor. |
 | Falmouth | ✅ No ar (testada) | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Testada em 06/10: 99 permits em 14 dias, sem valor nem construtora (a tela não mostra). |
-| North Reading | 🧪 Em teste | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Permits ativos desde set/2019. Endereço de dados ainda não identificado. |
 | Concord | 🧪 Em teste | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Building permits emitidos desde 01/01/2021. |
-| Mansfield | 🧪 Em teste | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Página do PermitEyes confirmada (HTTP 200); o site da prefeitura bloqueia acesso automático. |
+| Mansfield | 🧪 Em teste | search_by_address_or_record | PermitEyes Public View. Testado em 07/10: os endereços de dados redirecionam para o login (/mansfield/login.php) ou dão erro 500, então a consulta pública parece exigir sessão. O site da prefeitura também bloqueia acesso automático. |
 | Pittsfield | 🧪 Em teste | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Região Berkshire (várias cidades na mesma tela); o robots.txt do site da prefeitura não permite, mas o do PermitEyes sim. |
 | Great Barrington | 🧪 Em teste | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Região Berkshire. |
-| Attleboro | 🧪 Em teste | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Existe também o arquivo antigo (permiteyes.net). |
 | Stockbridge | 🧪 Em teste | search_by_address_or_record | PermitEyes Public View (robots.txt permite; consulta sem login). Região Berkshire. |
 | Brookline | 🔧 Falta adaptador | search_by_address_or_record | Accela Citizen Access. Pesquisa por número, endereço ou nome. |
 | Lowell | 🔎 A identificar | search_by_address_or_record | MUNIS Citizen Self Service (Tyler). O site menciona relatórios mensais mediante solicitação. |
