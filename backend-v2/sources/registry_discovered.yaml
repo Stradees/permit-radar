@@ -1,11 +1,11 @@
 # Gerado por discover_towns.py. Cidades já existentes aqui nunca são alteradas pela varredura.
-# Limpo em 2026-10-08: removidos falsos positivos de NH/RI/CT (o endereço do PermitEyes não tem estado).
+# 2026-10-08: 12 cidades de MA conferidas e promovidas para confirmed; falsos positivos de NH/RI/CT removidos.
 states:
   massachusetts:
     cities:
     - name: Braintree
       source_type: permiteyes
-      status: experimental
+      status: confirmed
       access: search_by_address_or_record
       portal_url: https://permiteyes.us/braintree/publicview.php
       config:
@@ -15,10 +15,11 @@ states:
       field_map: {}
       source_link: https://permiteyes.us/braintree/publicview.php
       notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        67 permits em 14 dias; campos extras: description.'
+        67 permits em 14 dias; campos extras: description. Dados conferidos em 2026-10-08
+        (endereço, tipo, datas): OK.'
     - name: Easthampton
       source_type: permiteyes
-      status: experimental
+      status: confirmed
       access: search_by_address_or_record
       portal_url: https://permiteyes.us/easthampton/publicview.php
       config:
@@ -28,10 +29,11 @@ states:
       field_map: {}
       source_link: https://permiteyes.us/easthampton/publicview.php
       notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        21 permits em 14 dias; campos extras: description.'
+        21 permits em 14 dias; campos extras: description. Dados conferidos em 2026-10-08
+        (endereço, tipo, datas): OK.'
     - name: Fairhaven
       source_type: permiteyes
-      status: experimental
+      status: confirmed
       access: search_by_address_or_record
       portal_url: https://permiteyes.us/fairhaven/publicview.php
       config:
@@ -41,10 +43,11 @@ states:
       field_map: {}
       source_link: https://permiteyes.us/fairhaven/publicview.php
       notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        37 permits em 14 dias; campos extras: nenhum.'
+        37 permits em 14 dias; campos extras: nenhum. Dados conferidos em 2026-10-08
+        (endereço, tipo, datas): OK.'
     - name: Foxborough
       source_type: permiteyes
-      status: experimental
+      status: confirmed
       access: search_by_address_or_record
       portal_url: https://permiteyes.us/foxborough/publicview.php
       config:
@@ -54,10 +57,11 @@ states:
       field_map: {}
       source_link: https://permiteyes.us/foxborough/publicview.php
       notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        39 permits em 14 dias; campos extras: contractor, estimated_value.'
+        39 permits em 14 dias; campos extras: contractor, estimated_value. Dados conferidos
+        em 2026-10-08 (endereço, tipo, datas): OK.'
     - name: Hanson
       source_type: permiteyes
-      status: experimental
+      status: confirmed
       access: search_by_address_or_record
       portal_url: https://permiteyes.us/hanson/publicview.php
       config:
@@ -67,10 +71,11 @@ states:
       field_map: {}
       source_link: https://permiteyes.us/hanson/publicview.php
       notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        13 permits em 14 dias; campos extras: description.'
+        13 permits em 14 dias; campos extras: description. Dados conferidos em 2026-10-08
+        (endereço, tipo, datas): OK.'
     - name: Hopedale
       source_type: permiteyes
-      status: experimental
+      status: confirmed
       access: search_by_address_or_record
       portal_url: https://permiteyes.us/hopedale/publicview.php
       config:
@@ -80,10 +85,11 @@ states:
       field_map: {}
       source_link: https://permiteyes.us/hopedale/publicview.php
       notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        15 permits em 14 dias; campos extras: nenhum.'
+        15 permits em 14 dias; campos extras: nenhum. Dados conferidos em 2026-10-08
+        (endereço, tipo, datas): OK.'
     - name: Ipswich
       source_type: permiteyes
-      status: experimental
+      status: confirmed
       access: search_by_address_or_record
       portal_url: https://permiteyes.us/ipswich/publicview.php
       config:
@@ -93,10 +99,11 @@ states:
       field_map: {}
       source_link: https://permiteyes.us/ipswich/publicview.php
       notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        27 permits em 14 dias; campos extras: nenhum.'
+        27 permits em 14 dias; campos extras: nenhum. Dados conferidos em 2026-10-08
+        (endereço, tipo, datas): OK.'
     - name: Lincoln
       source_type: permiteyes
-      status: experimental
+      status: confirmed
       access: search_by_address_or_record
       portal_url: https://permiteyes.us/lincoln/publicview.php
       config:
@@ -106,10 +113,11 @@ states:
       field_map: {}
       source_link: https://permiteyes.us/lincoln/publicview.php
       notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        8 permits em 14 dias; campos extras: nenhum.'
+        8 permits em 14 dias; campos extras: nenhum. Dados conferidos em 2026-10-08
+        (endereço, tipo, datas): OK.'
     - name: Otis
       source_type: permiteyes
-      status: experimental
+      status: confirmed
       access: search_by_address_or_record
       portal_url: https://permiteyes.us/otis/publicview.php
       config:
@@ -119,10 +127,11 @@ states:
       field_map: {}
       source_link: https://permiteyes.us/otis/publicview.php
       notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        7 permits em 14 dias; campos extras: description.'
+        7 permits em 14 dias; campos extras: description. Dados conferidos em 2026-10-08
+        (endereço, tipo, datas): OK.'
     - name: Rehoboth
       source_type: permiteyes
-      status: experimental
+      status: confirmed
       access: search_by_address_or_record
       portal_url: https://permiteyes.us/rehoboth/publicview.php
       config:
@@ -132,10 +141,11 @@ states:
       field_map: {}
       source_link: https://permiteyes.us/rehoboth/publicview.php
       notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        28 permits em 14 dias; campos extras: nenhum.'
+        28 permits em 14 dias; campos extras: nenhum. Dados conferidos em 2026-10-08
+        (endereço, tipo, datas): OK.'
     - name: Sandwich
       source_type: permiteyes
-      status: experimental
+      status: confirmed
       access: search_by_address_or_record
       portal_url: https://permiteyes.us/sandwich/publicview.php
       config:
@@ -145,10 +155,11 @@ states:
       field_map: {}
       source_link: https://permiteyes.us/sandwich/publicview.php
       notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        52 permits em 14 dias; campos extras: nenhum.'
+        52 permits em 14 dias; campos extras: nenhum. Dados conferidos em 2026-10-08
+        (endereço, tipo, datas): OK.'
     - name: West Bridgewater
       source_type: permiteyes
-      status: experimental
+      status: confirmed
       access: search_by_address_or_record
       portal_url: https://permiteyes.us/westbridgewater/publicview.php
       config:
@@ -158,4 +169,5 @@ states:
       field_map: {}
       source_link: https://permiteyes.us/westbridgewater/publicview.php
       notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        16 permits em 14 dias; campos extras: description.'
+        16 permits em 14 dias; campos extras: description. Dados conferidos em 2026-10-08
+        (endereço, tipo, datas): OK.'
