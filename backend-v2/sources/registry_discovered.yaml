@@ -1,4 +1,5 @@
 # Gerado por discover_towns.py. Cidades já existentes aqui nunca são alteradas pela varredura.
+# Limpo em 2026-10-08: removidos falsos positivos de NH/RI/CT (o endereço do PermitEyes não tem estado).
 states:
   massachusetts:
     cities:
@@ -158,74 +159,3 @@ states:
       source_link: https://permiteyes.us/westbridgewater/publicview.php
       notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
         16 permits em 14 dias; campos extras: description.'
-  new_hampshire:
-    cities:
-    - name: Lincoln
-      source_type: permiteyes
-      status: experimental
-      access: search_by_address_or_record
-      portal_url: https://permiteyes.us/lincoln/publicview.php
-      config:
-        portal_url: https://permiteyes.us/lincoln/publicview.php
-        page_size: 100
-        max_pages: 5
-      field_map: {}
-      source_link: https://permiteyes.us/lincoln/publicview.php
-      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        8 permits em 14 dias; campos extras: nenhum.'
-    - name: Milton
-      source_type: permiteyes
-      status: experimental
-      access: search_by_address_or_record
-      portal_url: https://permiteyes.us/milton/publicview.php
-      config:
-        portal_url: https://permiteyes.us/milton/publicview.php
-        page_size: 100
-        max_pages: 5
-      field_map: {}
-      source_link: https://permiteyes.us/milton/publicview.php
-      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        64 permits em 14 dias; campos extras: description.'
-    - name: Sandwich
-      source_type: permiteyes
-      status: experimental
-      access: search_by_address_or_record
-      portal_url: https://permiteyes.us/sandwich/publicview.php
-      config:
-        portal_url: https://permiteyes.us/sandwich/publicview.php
-        page_size: 100
-        max_pages: 5
-      field_map: {}
-      source_link: https://permiteyes.us/sandwich/publicview.php
-      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        52 permits em 14 dias; campos extras: nenhum.'
-  rhode_island:
-    cities:
-    - name: Lincoln
-      source_type: permiteyes
-      status: experimental
-      access: search_by_address_or_record
-      portal_url: https://permiteyes.us/lincoln/publicview.php
-      config:
-        portal_url: https://permiteyes.us/lincoln/publicview.php
-        page_size: 100
-        max_pages: 5
-      field_map: {}
-      source_link: https://permiteyes.us/lincoln/publicview.php
-      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        8 permits em 14 dias; campos extras: nenhum.'
-  connecticut:
-    cities:
-    - name: East Hampton
-      source_type: permiteyes
-      status: experimental
-      access: search_by_address_or_record
-      portal_url: https://permiteyes.us/easthampton/publicview.php
-      config:
-        portal_url: https://permiteyes.us/easthampton/publicview.php
-        page_size: 100
-        max_pages: 5
-      field_map: {}
-      source_link: https://permiteyes.us/easthampton/publicview.php
-      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
-        21 permits em 14 dias; campos extras: description.'
