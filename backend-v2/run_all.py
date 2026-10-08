@@ -29,9 +29,23 @@ REGISTRY_PATH = Path(__file__).parent / "sources" / "registry.yaml"
 RUNNABLE = ("confirmed", "experimental")
 
 
+DISCOVERED_PATH = Path(__file__).parent / "sources" / "registry_discovered.yaml"
+
+
 def load_registry() -> dict:
+    """Cadastro principal + cidades descobertas automaticamente (registry_discovered.yaml).
+    Cidades que já estão no cadastro principal têm prioridade."""
     with open(REGISTRY_PATH, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+        registry = yaml.safe_load(f)
+    if DISCOVERED_PATH.exists():
+        extra = yaml.safe_load(DISCOVERED_PATH.read_text(encoding="utf-8")) or {}
+        for state, data in (extra.get("states") or {}).items():
+            block = registry.setdefault("states", {}).setdefault(state, {"cities": []})
+            have = {c["name"].lower() for c in block.get("cities", [])}
+            for city in data.get("cities", []):
+                if city["name"].lower() not in have:
+                    block.setdefault("cities", []).append(city)
+    return registry
 
 
 def run(states_filter: list[str] | None = None, days_back: int = 2,

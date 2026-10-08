@@ -200,7 +200,7 @@ def check_city(cfg: dict) -> dict:
     for key in ("portal_url", "info_url"):
         if cfg.get(key) and cfg[key] not in urls:
             urls.append(cfg[key])
-    res = {"name": name, "status": status, "access": cfg.get("access", ""), "type": cfg.get("source_type", ""),
+    res = {"name": name, "state": cfg.get("_state", "massachusetts"), "status": status, "access": cfg.get("access", ""), "type": cfg.get("source_type", ""),
            "pages": [], "portals": [], "endpoints": [], "dry": None, "probe": None, "dry_log": []}
 
     for u in urls:
@@ -245,7 +245,7 @@ def dry_run(cfg: dict) -> dict:
     out = {"dry": None, "dry_log": []}
     buf = io.StringIO()
     try:
-        ad = ADAPTERS[cfg["source_type"]](city=cfg["name"], state="massachusetts", config=cfg.get("config", {}),
+        ad = ADAPTERS[cfg["source_type"]](city=cfg["name"], state=cfg.get("_state", "massachusetts"), config=cfg.get("config", {}),
                                           field_map=cfg.get("field_map", {}), source_link=cfg.get("source_link", ""))
         with contextlib.redirect_stdout(buf):
             rows = ad.fetch(days_back=14)
@@ -276,11 +276,11 @@ def render(results: list[dict]) -> str:
         dry = "—"
         if r["dry"]:
             dry = f"{r['dry']['count']} permits" if r["dry"]["ok"] else "ERRO"
-        L.append(f"| {r['name']} | {r['status']} | {r['access']} | {pages} | {', '.join(plats) or '—'} | {dry} |")
+        L.append(f"| {r['name']} ({r['state']}) | {r['status']} | {r['access']} | {pages} | {', '.join(plats) or '—'} | {dry} |")
     L.append("")
     L.append("## Detalhes por cidade")
     for r in results:
-        L.append(f"\n### {r['name']} — {r['status']}")
+        L.append(f"\n### {r['name']} ({r['state']}) — {r['status']}")
         for p in r["pages"]:
             rb = {True: "permitido", False: "NÃO permitido", None: "n/d"}[p["robots"]]
             L.append(f"- {p['url']} → HTTP {p['http']}"
@@ -318,15 +318,15 @@ def main():
     for state, data in load_registry().get("states", {}).items():
         for c in data.get("cities", []):
             if not wanted or c["name"].lower() in wanted:
-                cities.append(c)
+                cities.append({**c, "_state": state})
 
     with ThreadPoolExecutor(max_workers=6) as pool:
         results = list(pool.map(check_city, cities))
 
     # Coletas de teste, uma de cada vez (para as mensagens não se misturarem)
-    by_name = {c["name"]: c for c in cities}
+    by_name = {(c["_state"], c["name"]): c for c in cities}
     for r in results:
-        cfg = by_name[r["name"]]
+        cfg = by_name[(r["state"], r["name"])]
         if cfg.get("status") in ("confirmed", "experimental") or (
                 cfg.get("source_type") == "permiteyes" and cfg.get("config")):
             if cfg.get("source_type") in ADAPTERS:
