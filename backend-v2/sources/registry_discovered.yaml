@@ -1,0 +1,231 @@
+# Gerado por discover_towns.py. Cidades já existentes aqui nunca são alteradas pela varredura.
+states:
+  massachusetts:
+    cities:
+    - name: Braintree
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/braintree/publicview.php
+      config:
+        portal_url: https://permiteyes.us/braintree/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/braintree/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        67 permits em 14 dias; campos extras: description.'
+    - name: Easthampton
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/easthampton/publicview.php
+      config:
+        portal_url: https://permiteyes.us/easthampton/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/easthampton/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        21 permits em 14 dias; campos extras: description.'
+    - name: Fairhaven
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/fairhaven/publicview.php
+      config:
+        portal_url: https://permiteyes.us/fairhaven/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/fairhaven/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        37 permits em 14 dias; campos extras: nenhum.'
+    - name: Foxborough
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/foxborough/publicview.php
+      config:
+        portal_url: https://permiteyes.us/foxborough/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/foxborough/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        39 permits em 14 dias; campos extras: contractor, estimated_value.'
+    - name: Hanson
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/hanson/publicview.php
+      config:
+        portal_url: https://permiteyes.us/hanson/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/hanson/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        13 permits em 14 dias; campos extras: description.'
+    - name: Hopedale
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/hopedale/publicview.php
+      config:
+        portal_url: https://permiteyes.us/hopedale/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/hopedale/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        15 permits em 14 dias; campos extras: nenhum.'
+    - name: Ipswich
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/ipswich/publicview.php
+      config:
+        portal_url: https://permiteyes.us/ipswich/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/ipswich/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        27 permits em 14 dias; campos extras: nenhum.'
+    - name: Lincoln
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/lincoln/publicview.php
+      config:
+        portal_url: https://permiteyes.us/lincoln/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/lincoln/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        8 permits em 14 dias; campos extras: nenhum.'
+    - name: Otis
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/otis/publicview.php
+      config:
+        portal_url: https://permiteyes.us/otis/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/otis/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        7 permits em 14 dias; campos extras: description.'
+    - name: Rehoboth
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/rehoboth/publicview.php
+      config:
+        portal_url: https://permiteyes.us/rehoboth/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/rehoboth/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        28 permits em 14 dias; campos extras: nenhum.'
+    - name: Sandwich
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/sandwich/publicview.php
+      config:
+        portal_url: https://permiteyes.us/sandwich/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/sandwich/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        52 permits em 14 dias; campos extras: nenhum.'
+    - name: West Bridgewater
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/westbridgewater/publicview.php
+      config:
+        portal_url: https://permiteyes.us/westbridgewater/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/westbridgewater/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        16 permits em 14 dias; campos extras: description.'
+  new_hampshire:
+    cities:
+    - name: Lincoln
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/lincoln/publicview.php
+      config:
+        portal_url: https://permiteyes.us/lincoln/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/lincoln/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        8 permits em 14 dias; campos extras: nenhum.'
+    - name: Milton
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/milton/publicview.php
+      config:
+        portal_url: https://permiteyes.us/milton/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/milton/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        64 permits em 14 dias; campos extras: description.'
+    - name: Sandwich
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/sandwich/publicview.php
+      config:
+        portal_url: https://permiteyes.us/sandwich/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/sandwich/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        52 permits em 14 dias; campos extras: nenhum.'
+  rhode_island:
+    cities:
+    - name: Lincoln
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/lincoln/publicview.php
+      config:
+        portal_url: https://permiteyes.us/lincoln/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/lincoln/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        8 permits em 14 dias; campos extras: nenhum.'
+  connecticut:
+    cities:
+    - name: East Hampton
+      source_type: permiteyes
+      status: experimental
+      access: search_by_address_or_record
+      portal_url: https://permiteyes.us/easthampton/publicview.php
+      config:
+        portal_url: https://permiteyes.us/easthampton/publicview.php
+        page_size: 100
+        max_pages: 5
+      field_map: {}
+      source_link: https://permiteyes.us/easthampton/publicview.php
+      notes: 'Descoberta automática em 2026-10-08 (PermitEyes Public View). Validação:
+        21 permits em 14 dias; campos extras: description.'
