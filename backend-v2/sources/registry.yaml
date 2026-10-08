@@ -435,6 +435,138 @@ states:
         access: file_report
         notes: "Listada em diretório público: relatórios mensais de permits emitidos."
 
-  # Próximo estado: mesma estrutura, ativar quando formos expandir.
-  # new_york:
-  #   cities: []
+
+  # =====================================================================================
+  # NEW HAMPSHIRE  (estudo de 07/10/2026; cidades do PermitEyes entram pela varredura automática)
+  # =====================================================================================
+  new_hampshire:
+    cities:
+
+      - name: Portsmouth
+        source_type: opengov_portal
+        status: robots_blocked
+        access: search_by_address_or_record
+        portal_url: "https://portsmouthnh.portal.opengov.com/"
+        notes: "OpenGov: o robots.txt não permite coleta automática. A cidade migrou do ViewPoint para o OpenGov."
+
+      - name: Concord
+        source_type: tyler_css
+        status: to_investigate
+        access: search_by_address_or_record
+        info_url: "https://www.concordnh.gov/1888/Citizen-Self-Service-Permits"
+        notes: "Tyler Citizen Self Service com busca pública (sem conta) por número ou endereço. Falta checar se existe listagem por data e o robots.txt."
+
+      - name: Dover
+        source_type: unknown
+        status: to_investigate
+        access: search_by_address_or_record
+        portal_url: "https://permits.dover.nh.gov"
+        info_url: "https://www.dover.nh.gov/government/city-operations/community-services/permitting/"
+        notes: "Portal próprio de permits, planos e licenças (cerca de 60 formulários). Plataforma ainda não identificada."
+
+      - name: Nashua
+        source_type: arcgis_query
+        status: to_investigate
+        access: open_data_api
+        portal_url: "https://newgis.nashuanh.gov/arcgisapp3/rest/services/CommunityDevelopment/Building_Permits_for_AGOL/MapServer"
+        info_url: "https://nashuamaps.maps.arcgis.com/apps/webappviewer/index.html?id=6512560c327f4454a08f3de7b9958f8f"
+        notes: "ArcGIS: a cópia pública (Building_Permits_June_2025, 8.792 permits) está PARADA desde 17/06/2025. O serviço da própria cidade (MapServer) pode estar atual; a varredura testa isso."
+
+      - name: Manchester
+        source_type: unknown
+        status: to_investigate
+        access: unknown
+        notes: "Maior cidade de NH. Sistema de permits ainda não identificado."
+
+  # =====================================================================================
+  # RHODE ISLAND
+  # =====================================================================================
+  rhode_island:
+    cities:
+
+      - name: Providence
+        source_type: opengov_portal
+        status: robots_blocked
+        access: search_by_address_or_record
+        portal_url: "https://providenceri.portal.opengov.com/"
+        info_url: "https://www.providenceri.gov/inspection/online-permitting/"
+        notes: "Portal estadual de e-permitting em OpenGov/ViewpointCloud. O robots.txt não permite coleta automática."
+
+      - name: North Providence
+        source_type: opengov_portal
+        status: robots_blocked
+        access: search_by_address_or_record
+        portal_url: "https://northprovidenceri.viewpointcloud.com/"
+        notes: "ViewpointCloud (portal estadual). Coleta automática não permitida."
+
+      - name: East Providence
+        source_type: opengov_portal
+        status: robots_blocked
+        access: search_by_address_or_record
+        info_url: "https://ribcc.ri.gov/forms-resources-and-e-permitting/statewide-e-permitting-portal"
+        notes: "Portal estadual de e-permitting (OpenGov/ViewpointCloud). Coleta automática não permitida."
+
+  # =====================================================================================
+  # CONNECTICUT  (dados estaduais são só contagens anuais por cidade: não servem como lead)
+  # =====================================================================================
+  connecticut:
+    cities:
+
+      - name: West Hartford
+        source_type: pdf_report
+        status: needs_adapter
+        access: file_report
+        info_url: "https://www.westhartfordct.gov/town-departments/building/monthly-permit-reports"
+        notes: "PRIORIDADE ALTA. Relatório mensal em PDF (set/2026 publicado em 02/10) com número do permit, valor, tipo (Roofing-Siding, Deck, Additions...), descrição, construtora COM TELEFONE e proprietário. Exige leitor de PDF."
+
+      - name: Milford
+        source_type: file_report
+        status: robots_blocked
+        access: file_report
+        info_url: "https://www.ci.milford.ct.us/building-inspection/pages/list-of-permits-issued-by-month"
+        notes: "Lista mensal de permits emitidos desde 2011, mas o site bloqueia acesso automático (robots.txt)."
+
+      - name: Enfield
+        source_type: file_report
+        status: to_investigate
+        access: file_report
+        info_url: "https://www.enfield-ct.gov/Archive.aspx?AMID=37"
+        notes: "Arquivo mensal de permits (desde jul/2011). Formato ainda não verificado."
+
+      - name: New Haven
+        source_type: unknown
+        status: to_investigate
+        access: search_by_address_or_record
+        info_url: "https://www.newhavenct.gov/"
+        notes: "Busca de permits com registro. Plataforma ainda não identificada."
+
+      - name: New Canaan
+        source_type: opengov_portal
+        status: robots_blocked
+        access: search_by_address_or_record
+        notes: "OpenGov desde nov/2021. Coleta automática não permitida."
+
+      - name: North Haven
+        source_type: opengov_portal
+        status: robots_blocked
+        access: search_by_address_or_record
+        notes: "OpenGov. Coleta automática não permitida."
+
+      - name: Tolland
+        source_type: unknown
+        status: login_required
+        access: login_required
+        portal_url: "https://www.viewmypermitct.org/"
+        notes: "Busca de permits exige registro."
+
+      - name: Berlin
+        source_type: unknown
+        status: to_investigate
+        access: search_by_address_or_record
+        notes: "Permits online desde jan/2021. Plataforma ainda não identificada."
+
+      - name: Durham
+        source_type: unknown
+        status: to_investigate
+        access: search_by_address_or_record
+        notes: "Sistema 'Permit Link' desde mai/2021. Plataforma ainda não identificada."
