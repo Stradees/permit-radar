@@ -1,0 +1,33 @@
+name: Discovery Scan
+
+on:
+  workflow_dispatch: {}   # só roda quando você aperta "Run workflow"
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependências
+        run: pip install -r backend-v2/requirements.txt
+
+      - name: Varrer MA, NH, RI e CT
+        working-directory: backend-v2
+        run: python discover_towns.py
+
+      - name: Salvar relatório e cidades descobertas
+        run: |
+          git config user.name "permit-radar-bot"
+          git config user.email "bot@permitradar.local"
+          git add backend-v2/discovery_report.md backend-v2/sources/registry_discovered.yaml || true
+          git diff --quiet --cached || git commit -m "Varredura de descoberta de cidades"
+          git push
