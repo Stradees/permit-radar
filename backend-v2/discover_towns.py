@@ -156,6 +156,12 @@ def probe_town(args):
         code, final, text = get(url)
         low = text.lower() if isinstance(text, str) else ""
         if code == 200 and "permiteyes" in low and ("publicview" in low or "public view" in low) and "login.php" not in final:
+            # O endereço do PermitEyes NÃO tem estado: "lincoln" pode ser de MA, NH ou RI.
+            # Fora de MA só vale se a própria página citar o estado e não citar Massachusetts.
+            if st != "MA":
+                full = STATES[st][2].lower()
+                if (full not in low and f", {st.lower()}" not in low) or "massachusetts" in low:
+                    continue
             out["permiteyes"] = url
             break
 
@@ -212,6 +218,9 @@ def entry_for(name: str, state_key: str, v: dict, url: str) -> dict:
     }
 
 
+CLAIMED: dict = {}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--states", nargs="*", default=list(STATES), help="Siglas: MA NH RI CT")
@@ -229,7 +238,7 @@ def main():
     summary = []
     sections = []
 
-    for st in args.states:
+    for st in sorted(args.states, key=lambda x: x != "MA"):
         key, fips, label = STATES[st]
         towns, origin = load_towns(st, fips)
         print(f"[{st}] {len(towns)} cidades ({origin})", flush=True)
@@ -237,6 +246,8 @@ def main():
             probes = list(pool.map(probe_town, [(t, st) for t in towns]))
 
         pe = [p for p in probes if p["permiteyes"]]
+        # segurança extra: um mesmo endereço nunca é atribuído a dois estados
+        pe = [p for p in pe if CLAIMED.setdefault(p["permiteyes"], st) == st]
         og = [p for p in probes if p["opengov"]]
         ty = [p for p in probes if p["tyler"]]
         validated, failed, new_entries = [], [], []
