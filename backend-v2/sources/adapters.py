@@ -330,6 +330,7 @@ class CKANAdapter(BaseAdapter):
         if not (pkg or query):
             return rid
         candidates = []   # (titulo, id, ativo)
+        self._res_info = {}
         if pkg:
             try:
                 url = base_url.replace("datastore_search_sql", "package_show")
@@ -344,6 +345,7 @@ class CKANAdapter(BaseAdapter):
                 for p in results:
                     for r in p.get("resources", []):
                         candidates.append((p.get("title", ""), r.get("id"), bool(r.get("datastore_active"))))
+                        self._res_info[r.get("id")] = (r.get("format"), r.get("url"))
             except Exception as e:  # noqa: BLE001
                 print(f"[info] {self.city}: package_search falhou ({str(e)[:120]})")
         print(f"[info] {self.city}: arquivos encontrados no CKAN: {candidates[:12]}")
@@ -361,9 +363,31 @@ class CKANAdapter(BaseAdapter):
             raise RuntimeError("CKAN: nenhum arquivo com consulta ativa entre os encontrados")
         return rid
 
+    def _diagnose(self, base_url: str, rid: str):
+        """Escreve no relatório o resultado de alguns endereços possíveis de um arquivo do CKAN (só para investigação)."""
+        root = base_url.split("/api/")[0]
+        info = getattr(self, "_res_info", {}).get(rid)
+        print(f"[info] {self.city}: formato/endereço do arquivo: {info}")
+        tests = [f"{root}/api/3/action/datastore_search?resource_id={rid}&limit=1",
+                 f"{root}/api/action/datastore_search?resource_id={rid}&limit=1",
+                 f"{root}/datastore/dump/{rid}?limit=2&format=csv",
+                 f"{root}/api/3/action/resource_show?id={rid}"]
+        if info and info[1]:
+            tests.append(info[1])
+        for u in tests:
+            try:
+                r = requests.get(u, headers=HEADERS, timeout=40, stream=True)
+                head = next(r.iter_content(600), b"")[:300].decode("utf-8", "replace").replace("\n", " ")
+                print(f"[info] {self.city}: teste {u[:130]} -> HTTP {r.status_code} · {head}")
+                r.close()
+            except Exception as e:  # noqa: BLE001
+                print(f"[info] {self.city}: teste {u[:130]} -> erro {str(e)[:100]}")
+
     def fetch_raw(self, days_back: int) -> list[dict]:
         base_url = self.config["base_url"]
         resource_id = self._resolve_resource(base_url)
+        if self.config.get("diagnose"):
+            self._diagnose(base_url, resource_id)
         date_field = self.config.get("date_field", "issued_date")
         if date_field == "auto":
             date_field = self._discover_date_field(base_url, resource_id)
