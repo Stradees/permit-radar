@@ -70,7 +70,7 @@ Resumo por situação: address_only: 2, confirmed: 25, experimental: 2, login_re
 | Tolland (connecticut) | login_required | login_required | 3/3 | Municity, OpenGov/ViewpointCloud | — |
 | Berlin (connecticut) | to_investigate | search_by_address_or_record | — | — | — |
 | Durham (connecticut) | to_investigate | search_by_address_or_record | — | — | — |
-| Orlando (florida) | experimental | open_data_api | — | — | 0 permits |
+| Orlando (florida) | experimental | open_data_api | — | — | 12 permits |
 | Tampa (florida) | experimental | open_data_api | — | — | ERRO |
 | Miami (florida) | to_investigate | open_data_api | 1/1 | ArcGIS | — |
 | Miami-Dade County (florida) | to_investigate | open_data_api | 1/1 | ArcGIS | — |
@@ -335,7 +335,7 @@ Resumo por situação: address_only: 2, confirmed: 25, experimental: 2, login_re
 - Mensagens da coleta de teste:
     [info] Falmouth: endereço de dados getbuildingpublichome.php (pedido simples); colunas: ['Application', 'Permit', 'Inspection', 'App.', 'Permit', 'COC', 'Insp.', 'Ap. No.', 'Appl. Date', 'Issue Date', 'Unit No.', 'Parcel No.', 'Street No.', 'Street Name', 'Applicant', 'Owner', 'Brief Description', 'Appl. Type', 'Permit Number', 'Appl. Status', 'Att.']
     [info] Falmouth: 21 cabeçalhos para 18 células; cabeçalhos sem dado: ['application', 'inspection']
-    [info] Falmouth: 219111 registros; data no início=2007-11-06, no fim=2026-10-09; mais novos no end
+    [info] Falmouth: 219112 registros; data no início=2007-11-06, no fim=2026-10-09; mais novos no end
     [info] Falmouth: exemplo de linha: {'ap_no': '4857', 'appl_date': '10/30/07', 'parcel_no': '46 01 000 019', 'street_no': '4', 'street_name': 'shoreview ave', 'applicant': 'pratt trustee harold i', 'owner': 'pratt trustee harold i', 'appl_type': 'SFA', 'appl_status': 'CLOSED', 'site_address': '4 shoreview ave'}
     [info] Falmouth: tipos nas 300 linhas lidas: [('ELECT.', 91), ('GAS', 71), ('REP', 45), ('PLUMB.', 44), ('RESI.', 32), ('SHT MTL', 8), ('TENT', 3), ('FIREALARM', 1), ('COMM.', 1), ('CEP', 1), ('SIGN', 1), ('SFA', 1), ('COU', 1)]
     [info] Falmouth: 234 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
@@ -389,13 +389,13 @@ Resumo por situação: address_only: 2, confirmed: 25, experimental: 2, login_re
 ### Easthampton (massachusetts) — confirmed
 - https://permiteyes.us/easthampton/publicview.php → HTTP 200 · título: Permiteyes · plataforma: PermitEyes · robots.txt: permitido
 - Endereços de dados candidatos: https://permiteyes.us/easthampton/publicattachments.php?application_id= | https://permiteyes.us/easthampton/controller/getvalues_controller.php | https://permiteyes.us/easthampton/ajax/getpublichome.php
-- Coleta de teste (14 dias): 23 permits. Exemplo: {'permit_number': 'R-26-0727', 'address': '59 hendrick st', 'permit_type': 'RESI.', 'category': 'Renovation', 'estimated_value': None, 'contractor': None, 'issue_date': '2026-09-25'}
+- Coleta de teste (14 dias): 23 permits. Exemplo: {'permit_number': 'C-26-0741', 'address': '22 lussier circle', 'permit_type': 'COMM.', 'category': 'Renovation', 'estimated_value': None, 'contractor': None, 'issue_date': '2026-09-28'}
 - Mensagens da coleta de teste:
     [info] Easthampton: endereço de dados getpublichome.php (pedido simples); colunas: ['Application', 'Permit', 'Inspection', 'App.', 'Permit', 'COC', 'Insp.', 'Fee', 'Sign Off', 'Ap. No.', 'Appl. Date', 'Issue Date', 'Unit No.', 'Site Address', 'Street No.', 'Street Name', 'Applicant', 'Owner', 'Brief Description', 'Appl. Type', 'Permit Number', 'Appl. Status', 'Att.']
-    [info] Easthampton: 24057 registros; data no início=2022-06-28, no fim=2026-10-09; mais novos no end
+    [info] Easthampton: 24061 registros; data no início=2022-06-28, no fim=2026-10-09; mais novos no end
     [info] Easthampton: exemplo de linha: {'appl_date': '19', 'issue_date': '06/28/22', 'unit_no': '06/28/22', 'street_no': '2', 'street_name': 'bay ave', 'applicant': 'neumann jonathan', 'owner': 'neumann jonathan', 'brief_description': 'test', 'appl_type': 'RESI.', 'permit_number': 'R-22-0013', 'appl_status': 'Permit Issued', 'site_address': '2 bay ave'}
-    [info] Easthampton: tipos nas 200 linhas lidas: [('RESI.', 71), ('ELECT.', 52), ('PLUMB.', 16), ('CI', 14), ('GAS', 13), ('COMM.', 9), ('WZ', 7), ('FSA', 6), ('SHT MTL', 4), ('TRENCH', 3), ('TENT', 2), ('FS', 2), ('SFA', 1)]
-    [info] Easthampton: 118 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
+    [info] Easthampton: tipos nas 200 linhas lidas: [('RESI.', 69), ('ELECT.', 54), ('PLUMB.', 16), ('CI', 14), ('GAS', 13), ('COMM.', 9), ('WZ', 7), ('FSA', 6), ('SHT MTL', 4), ('TRENCH', 3), ('TENT', 2), ('FS', 2), ('SFA', 1)]
+    [info] Easthampton: 120 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
     [info] Easthampton: data mais recente encontrada: 2026-10-08
 
 ### Fairhaven (massachusetts) — confirmed
@@ -590,14 +590,19 @@ Resumo por situação: address_only: 2, confirmed: 25, experimental: 2, login_re
 ### Durham (connecticut) — to_investigate
 
 ### Orlando (florida) — experimental
-- Coleta de teste (14 dias): 0 permits. Exemplo: None
+- Coleta de teste (14 dias): 12 permits. Exemplo: {'permit_number': 'BLD2026-16444', 'address': 'SUITE #13', 'permit_type': 'Alteration', 'category': 'Renovation', 'estimated_value': 150000.0, 'contractor': 'MARK BRUZEK (RAM GENERAL CONTRACTING AND DEVELOP)', 'issue_date': '2026-09-23'}
 - Mensagens da coleta de teste:
+    [info] Orlando / Permit Applications (ryhf-m453) COLUNAS: ['application_status', 'application_type', 'collect_permit_fees_date', 'commissioner_district', 'contractor', 'contractor_address', 'contractor_name', 'contractor_phone_number', 'estimated_cost', 'final_date', 'issue_permit_date', 'neighborhood', 'of_cycles', 'of_pdoxwkflw', 'parcel_number', 'parcel_owner_name', 'pending_issuance_date', 'permit_address', 'permit_number', 'plan_review_type', 'prescreen_completed_date', 'private_provider', 'private_provider_company_name', 'private_provider_qualifier_name', 'processed_date', 'project_name', 'property_owner_name', 'square_footage', 'worktype']
+    [info] Orlando / Permit Applications EXEMPLO: {'permit_number': 'ENG2025-12467', 'application_type': 'Engineering', 'parcel_number': '302427499207000', 'worktype': 'Comm', 'final_date': '2026-08-13T00:00:00.000', 'permit_address': '6057 LAKE NONA BLVD', 'property_owner_name': ' LN WEST RETAIL CENTER LLC', 'parcel_owner_name': ' LN WEST RETAIL CENTER LLC', 'contractor': 'RICARDO S RODRIGUEZ (RYCON CONSTRUCTION)', 'contractor_name': 'MTCI PRIVATE PROVIDER SERVICES LLC', 'contractor_address': '15471 SW 12TH STREET,SUITE 205,SUNRISE, FL 33326', 'contractor_phone_number': '(954)851-9494', 'plan_review_type': 'Commercial', 'estimated_cost': '0', 'processed_date': '2025-12-01T00:00:00.000', 'prescreen_completed_date': '2025-12-01T00:00:00.000', 'of_cycles': '1', 'of_pdoxwkflw': '0', 'collect_permit_fees_date': '2025-12-01T00:00:00.000', 'pending_issuance_date': '2025-12-01T00:00:00.000', 'issue_permit_date': '2025-12-01T00:00:00.000', 'project_name': "PP- DICK'S SPORTING GOODS LAKE NONA", 'application_status': 'Finaled', 'square_footage': '0', 'neighborhood': 'Lake Nona South', 'commissioner_district': '1', 'private_provider': 'Yes', 'private_provider_company_name': 'MTCI PRIVATE PROVIDER SERVICES LLC', 'private_provider_qualifier_name': 'KHIRSUKHANI (MTCI PRIVATE PROVIDER SERVICES LLC)'}
     [info] Orlando / Permit Applications: permit mais recente emitido em: [{'latest': '2026-09-23T00:00:00.000'}]
     [info] Orlando / Permit Applications: 1000 registros recentes encontrados
     [info] Orlando: 799 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
 
 ### Tampa (florida) — experimental
-- Coleta de teste FALHOU: HTTP 404 — resposta do servidor: {"help": "https://www.civicdata.com/api/3/action/help_show?name=package_show", "error": {"__type": "Not Found Error", "message": "Not found"}, "success": false}
+- Coleta de teste FALHOU: HTTP 404 — resposta do servidor: {"help": "https://www.civicdata.com/api/3/action/help_show?name=datastore_search", "error": {"__type": "Not Found Error", "message": "Not found: Resource \"64977456-0c60-4d26-aa6e-0f94eed6efea\" was not found."}, "success": false}
+- Mensagens da coleta de teste:
+    [info] Tampa: package_show falhou (HTTP 404 — resposta do servidor: {"help": "https://www.civicdata.com/api/3/action/help_show?name=package_show", "error":)
+    [info] Tampa: arquivos encontrados no CKAN: [('City of Tampa, FL-Tampa Building Permits - 2023 to Present', '64977456-0c60-4d26-aa6e-0f94eed6efea', True), ('City of Tampa, FL-Building Permits - 2022 to 2023', '474844a7-3bd1-4722-bc8b-9ec5a5f82508', False), ('Saint Louis County-St_Louis_County_Issued_Permits_2012_Present', '65287ba3-e314-4fe4-8556-c07b3db544d1', True), ('City of Tampa, FL-Building Permits - 2010 to 2012', 'e6283f4b-ef87-4e13-897a-08cfc4435b32', True), ('City of Tampa, FL-Building Permits - 2021 to 2022', '5dccf477-1347-449c-a569-ca7003c3e9ee', True), ('City of Tampa, FL-Building Permits - 2020 to 2021', '4019843f-abfe-4db1-8d04-caf1ad34d88f', True), ('City of Tampa, FL-Building Permits - 2019 to 2020', 'a90e128a-6220-4db6-8c50-1b8b03fb3637', True), ('City of Tampa, FL-Building Permits - 2018 to 2019', '3be3d1e9-1525-421d-9a22-4a1a0ff237d8', True), ('City of Tampa, FL-Building Permits - 2017 to 2018', '2796d4a8-f478-4473-a1b7-eee861acf8e8', True), ('City of Tampa, FL-Building Permits - 2015 to 2017', '7d62bf58-26e2-493c-983c-01c27be34b34', True), ('City of Tampa, FL-Building Permits - 2012 to 2015', '410a0307-7bb7-4469-9f1f-a39246638e1c', True), ('City of Tampa, FL-Building Permits - Prior to 2010', '52f396e9-d987-4c6a-9d4d-626329719b21', True)]
 
 ### Miami (florida) — to_investigate
 - https://www.miami.gov/Maps-Data/Data-Explorer/Featured-Datasets/Building-Permits-Open-Data → HTTP 200 · título: Building Permits Since 2014 · plataforma: ArcGIS · robots.txt: permitido
