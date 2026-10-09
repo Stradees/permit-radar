@@ -86,6 +86,15 @@ EXTRA_CHECKS = [  # endereços específicos que valem uma olhada
     ("Milford CT - permits emitidos por mês", "https://www.ci.milford.ct.us/building-inspection/pages/list-of-permits-issued-by-month"),
     ("Tolland CT - viewmypermitct", "https://www.viewmypermitct.org/"),
     ("New Haven CT - portal", "https://www.newhavenct.gov/"),
+    # Flórida (a lista de cidades do Censo não serve lá; testamos fontes conhecidas)
+    ("Orlando FL - Socrata (permits)", "https://data.cityoforlando.net/resource/ryhf-m453.json?$limit=2"),
+    ("Tampa FL - CivicData (CKAN)", "https://www.civicdata.com/api/3/action/datastore_search?resource_id=64977456-0c60-4d26-aa6e-0f94eed6efea&limit=2"),
+    ("Miami FL - hub de dados (busca: permits)", "https://datahub-miamigis.opendata.arcgis.com/api/v3/datasets?q=building%20permits"),
+    ("Miami-Dade FL - hub (busca: permits)", "https://gis-mdc.opendata.arcgis.com/api/v3/datasets?q=building%20permits"),
+    ("Fort Lauderdale FL - hub (busca: permits)", "https://gis.fortlauderdale.gov/api/v3/datasets?q=building%20permits"),
+    ("Jacksonville FL - dados abertos (busca: permits)", "https://data.coj.net/api/v3/datasets?q=building%20permits"),
+    ("St. Petersburg FL - hub (busca: permits)", "https://stpetegis.opendata.arcgis.com/api/v3/datasets?q=permits"),
+    ("Miami Beach FL - hub (busca: permits)", "https://data-mbfl.opendata.arcgis.com/api/v3/datasets?q=permits"),
 ]
 
 
