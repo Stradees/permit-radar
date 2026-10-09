@@ -509,7 +509,7 @@ Resumo por situação: address_only: 2, confirmed: 25, experimental: 2, login_re
     [info] Sandwich: 12 cabeçalhos para 10 células; cabeçalhos sem dado: ['application', 'applicant']
     [info] Sandwich: ordenação por Issue Date (decrescente) confirmada; mais novos no início
     [info] Sandwich: exemplo de linha: {'ap_no': '1', 'appl_date': '03/16/20', 'issue_date': '03/29/20', 'site_address': '5 greenway circle', 'owner': 'oliver kelly', 'appl_type': 'RESI.', 'permit_number': 'R-20-0007', 'appl_status': 'Closed - Express Project'}
-    [info] Sandwich: tipos nas 200 linhas lidas: [('RESI.', 78), ('ELECT.', 51), ('PLUMB.', 27), ('GAS', 27), ('STR', 6), ('SFS', 4), ('SHT MTL', 2), ('AASE', 1), ('D', 1), ('TENT', 1), ('FIREALARM', 1), ('COMM.', 1)]
+    [info] Sandwich: tipos nas 200 linhas lidas: [('RESI.', 78), ('ELECT.', 52), ('GAS', 27), ('PLUMB.', 26), ('STR', 6), ('SFS', 4), ('SHT MTL', 2), ('AASE', 1), ('D', 1), ('TENT', 1), ('FIREALARM', 1), ('COMM.', 1)]
     [info] Sandwich: 121 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
     [info] Sandwich: data mais recente encontrada: 2026-10-09
 
@@ -593,10 +593,11 @@ Resumo por situação: address_only: 2, confirmed: 25, experimental: 2, login_re
 - Coleta de teste (14 dias): 0 permits. Exemplo: None
 - Mensagens da coleta de teste:
     [info] Orlando / Permit Applications: permit mais recente emitido em: [{'latest': '2026-09-23T00:00:00.000'}]
-    [info] Orlando / Permit Applications: 0 registros recentes encontrados
+    [info] Orlando / Permit Applications: 1000 registros recentes encontrados
+    [info] Orlando: 799 permits de especialidade/administrativos ignorados (elétrico, hidráulico, gás, alarme, certificados...)
 
 ### Tampa (florida) — experimental
-- Coleta de teste FALHOU: HTTP 404 — resposta do servidor: {"help": "https://www.civicdata.com/api/3/action/help_show?name=datastore_search", "error": {"__type": "Not Found Error", "message": "Not found: Resource \"64977456-0c60-4d26-aa6e-0f94eed6efea\" was not found."}, "success": false}
+- Coleta de teste FALHOU: HTTP 404 — resposta do servidor: {"help": "https://www.civicdata.com/api/3/action/help_show?name=package_show", "error": {"__type": "Not Found Error", "message": "Not found"}, "success": false}
 
 ### Miami (florida) — to_investigate
 - https://www.miami.gov/Maps-Data/Data-Explorer/Featured-Datasets/Building-Permits-Open-Data → HTTP 200 · título: Building Permits Since 2014 · plataforma: ArcGIS · robots.txt: permitido
