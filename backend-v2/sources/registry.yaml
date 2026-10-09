@@ -587,6 +587,7 @@ states:
             "Permit Applications": "ryhf-m453"
           date_field: "issue_permit_date"
           min_days_back: 30   # os dados de Orlando chegam com ~2 semanas de atraso
+          log_schema: true    # mostra as colunas no relatório, para ajustarmos os campos
         field_map: {}
         source_link: "https://data.cityoforlando.net/Permitting/Permit-Applications/ryhf-m453"
         notes: "Socrata da prefeitura. Conferir colunas de endereço, tipo e valor no teste de saúde."
@@ -598,6 +599,8 @@ states:
         config:
           base_url: "https://www.civicdata.com/api/3/action/datastore_search_sql"
           package_id: "tampa_permit_standard_permits_v11_17914"
+          search_query: "Tampa Building Permits 2023 to Present"
+          pick_contains: "present"
           resource_id: "64977456-0c60-4d26-aa6e-0f94eed6efea"
           date_field: auto
         field_map: {}

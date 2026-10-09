@@ -43,7 +43,7 @@ DEFAULT_CANDIDATES = {
                         "estimated_value", "est_cost", "job_cost", "project_cost",
                         "construction_cost", "cost_of_construction", "valuation",
                         "building_cost", "value", "cost"],
-    "issue_date": ["issue_date", "issued_date", "date_issued", "permit_issue_date",
+    "issue_date": ["issue_date", "issue_permit_date", "issued_date", "date_issued", "permit_issue_date",
                    "permit_license_issued_date", "issuance_date", "issued", "appl_date", "date_submitted"],
     "description": ["description", "comments", "project_description",
                     "work_description", "brief_description", "scope_of_work", "description_of_work",
@@ -322,22 +322,44 @@ class CKANAdapter(BaseAdapter):
         raise RuntimeError(f"CKAN: nenhuma coluna de data de emissão encontrada. Colunas: {fields}")
 
     def _resolve_resource(self, base_url: str) -> str:
-        """Se o cadastro informar package_id, pergunta ao CKAN qual arquivo do pacote tem tabela de consulta ativa
-        (o id exibido na página nem sempre é o da tabela)."""
+        """Descobre qual arquivo do CKAN tem tabela de consulta ativa (o id exibido na página nem sempre é o da tabela).
+        Tenta package_show (package_id) e, se falhar, busca pelo texto de search_query."""
         rid = self.config.get("resource_id")
         pkg = self.config.get("package_id")
-        if not pkg:
+        query = self.config.get("search_query")
+        if not (pkg or query):
             return rid
-        url = base_url.replace("datastore_search_sql", "package_show")
-        res = _http_get(url, {"id": pkg}).json().get("result", {}).get("resources", [])
-        active = [r for r in res if r.get("datastore_active")]
-        print(f"[info] {self.city}: arquivos do pacote: {[(r.get('name'), r.get('format'), r.get('id'), bool(r.get('datastore_active'))) for r in res][:6]}")
-        for r in active:
-            if r.get("id") == rid:
+        candidates = []   # (titulo, id, ativo)
+        if pkg:
+            try:
+                url = base_url.replace("datastore_search_sql", "package_show")
+                data = _http_get(url, {"id": pkg}).json().get("result", {})
+                candidates += [(data.get("title", pkg), r.get("id"), bool(r.get("datastore_active"))) for r in data.get("resources", [])]
+            except Exception as e:  # noqa: BLE001
+                print(f"[info] {self.city}: package_show falhou ({str(e)[:120]})")
+        if not candidates and query:
+            try:
+                url = base_url.replace("datastore_search_sql", "package_search")
+                results = _http_get(url, {"q": query, "rows": 15}).json().get("result", {}).get("results", [])
+                for p in results:
+                    for r in p.get("resources", []):
+                        candidates.append((p.get("title", ""), r.get("id"), bool(r.get("datastore_active"))))
+            except Exception as e:  # noqa: BLE001
+                print(f"[info] {self.city}: package_search falhou ({str(e)[:120]})")
+        print(f"[info] {self.city}: arquivos encontrados no CKAN: {candidates[:12]}")
+        active = [c for c in candidates if c[2]]
+        for c in active:
+            if c[1] == rid:
                 return rid
+        hint = str(self.config.get("pick_contains", "")).lower()
+        for c in active:
+            if hint and hint in c[0].lower():
+                return c[1]
         if active:
-            return active[0]["id"]
-        raise RuntimeError(f"CKAN: pacote {pkg} não tem arquivo com consulta ativa")
+            return active[0][1]
+        if candidates:
+            raise RuntimeError("CKAN: nenhum arquivo com consulta ativa entre os encontrados")
+        return rid
 
     def fetch_raw(self, days_back: int) -> list[dict]:
         base_url = self.config["base_url"]
@@ -384,7 +406,7 @@ class SocrataAdapter(BaseAdapter):
         return None
 
     def _log_schema(self, label: str, dataset_id: str, rows: list[dict]):
-        if not DEBUG:
+        if not DEBUG and not self.config.get("log_schema"):
             return
         if not rows:
             print(f"[info] {self.city} / {label} ({dataset_id}): sem linhas de amostra")
