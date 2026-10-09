@@ -305,10 +305,28 @@ class BaseAdapter:
 class CKANAdapter(BaseAdapter):
     """CKAN datastore_search_sql — usado por Boston (data.boston.gov)."""
 
+    def _discover_date_field(self, base_url: str, resource_id: str) -> str:
+        """Descobre a coluna da data de emissão (usado quando o cadastro diz date_field: auto)."""
+        url = base_url.replace("datastore_search_sql", "datastore_search")
+        data = _http_get(url, {"resource_id": resource_id, "limit": 1}).json()
+        fields = [f["id"] for f in data.get("result", {}).get("fields", []) if f.get("id") != "_id"]
+        lowered = {f.lower(): f for f in fields}
+        for cand in DEFAULT_CANDIDATES["issue_date"] + ["issuedate", "issued", "date_issued", "issue_dt"]:
+            if cand in lowered:
+                print(f"[info] {self.city}: coluna de data escolhida: {lowered[cand]}")
+                return lowered[cand]
+        for f in fields:
+            if "issue" in f.lower() and "date" in f.lower():
+                print(f"[info] {self.city}: coluna de data escolhida: {f}")
+                return f
+        raise RuntimeError(f"CKAN: nenhuma coluna de data de emissão encontrada. Colunas: {fields}")
+
     def fetch_raw(self, days_back: int) -> list[dict]:
         base_url = self.config["base_url"]
         resource_id = self.config["resource_id"]
         date_field = self.config.get("date_field", "issued_date")
+        if date_field == "auto":
+            date_field = self._discover_date_field(base_url, resource_id)
         since = (date.today() - timedelta(days=days_back)).isoformat()
         sql = (f'SELECT * FROM "{resource_id}" WHERE {date_field} >= \'{since}\' '
                f'ORDER BY {date_field} DESC LIMIT 1000')

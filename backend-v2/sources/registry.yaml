@@ -570,3 +570,50 @@ states:
         status: to_investigate
         access: search_by_address_or_record
         notes: "Sistema 'Permit Link' desde mai/2021. Plataforma ainda não identificada."
+
+  # ----------------------------------------------------------------------------------------------
+  # FLÓRIDA — dados abertos (a lei de registros públicos da Flórida é muito ampla).
+  # Tudo começa como "experimental": roda só no teste de saúde até conferirmos endereço/tipo/datas.
+  # ----------------------------------------------------------------------------------------------
+  florida:
+    cities:
+      - name: Orlando
+        source_type: socrata
+        status: experimental
+        access: open_data_api
+        config:
+          domain: "data.cityoforlando.net"
+          datasets:
+            "Permit Applications": "ryhf-m453"
+          date_field: "issue_permit_date"
+        field_map: {}
+        source_link: "https://data.cityoforlando.net/Permitting/Permit-Applications/ryhf-m453"
+        notes: "Socrata da prefeitura. Conferir colunas de endereço, tipo e valor no teste de saúde."
+
+      - name: Tampa
+        source_type: ckan
+        status: experimental
+        access: open_data_api
+        config:
+          base_url: "https://www.civicdata.com/api/3/action/datastore_search_sql"
+          resource_id: "64977456-0c60-4d26-aa6e-0f94eed6efea"
+          date_field: auto
+        field_map: {}
+        source_link: "https://civicdata.com/dataset/tampa_permit_standard_permits_v11_17914/resource/64977456-0c60-4d26-aa6e-0f94eed6efea"
+        notes: "Tampa 2023 até hoje, CivicData (CKAN), domínio público, atualizado diariamente, padrão BLDS."
+
+      - name: Miami
+        source_type: arcgis_query
+        status: to_investigate
+        access: open_data_api
+        portal_url: "https://www.miami.gov/Maps-Data/Data-Explorer/Featured-Datasets/Building-Permits-Open-Data"
+        source_link: "https://datahub-miamigis.opendata.arcgis.com/search?collection=Dataset"
+        notes: "Permits desde 2014 com custo e prazos. Falta localizar o endereço do serviço (FeatureServer) da camada de permits."
+
+      - name: Miami-Dade County
+        source_type: arcgis_query
+        status: to_investigate
+        access: open_data_api
+        portal_url: "https://gis-mdc.opendata.arcgis.com"
+        source_link: "https://gis-mdc.opendata.arcgis.com"
+        notes: "Hub de dados abertos do condado. Procurar camada de building permits."
