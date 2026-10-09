@@ -382,6 +382,7 @@
       <div class="pr-toolbar">
         <input class="pr-search" id="pr-search" placeholder="Search address, city, permit #, contractor, applicant..." />
         <select class="pr-filter" id="pr-filter-cat"><option value="">All Work Types</option></select>
+        <select class="pr-filter" id="pr-filter-state"><option value="">All States</option></select>
         <select class="pr-filter" id="pr-filter-city"><option value="">All Cities</option></select>
         <select class="pr-filter" id="pr-filter-status"><option value="">All Status</option></select>
         <select class="pr-filter" id="pr-filter-value">
@@ -504,8 +505,15 @@
     return TYPE_LABELS[k] || t;
   }
 
+  const STATE_CODES = {massachusetts:"MA", florida:"FL", new_hampshire:"NH", rhode_island:"RI", connecticut:"CT",
+    new_york:"NY", texas:"TX", georgia:"GA", north_carolina:"NC", south_carolina:"SC", new_jersey:"NJ"};
+  function stateCode(raw){
+    const k = String(raw || "").toLowerCase().trim();
+    return STATE_CODES[k] || (k.length === 2 ? k.toUpperCase() : "MA");
+  }
   function normalize(p){
     return {
+      state: stateCode(p.source_state),
       id: [p.source_state||"", p.source_city||p.city||"", p.permit_number||""].join("|"),
       permitNumber: p.permit_number, address: tc(p.address || ""), city: p.city || p.source_city || "",
       permitType: typeLabel(p.permit_type || ""), category: p.category || "Renovation",
@@ -555,10 +563,10 @@
   }
   function getFiltered(){
     const q = $("pr-search").value.trim().toLowerCase();
-    const cat = $("pr-filter-cat").value, city = $("pr-filter-city").value,
+    const cat = $("pr-filter-cat").value, city = $("pr-filter-city").value, stt = $("pr-filter-state").value,
           st = $("pr-filter-status").value, minV = Number($("pr-filter-value").value || 0);
     const list = PERMITS.filter(p =>
-      (!cat || p.category === cat) && (!city || p.city === city) && (!st || p.status === st) &&
+      (!cat || p.category === cat) && (!stt || (p.state || "MA") === stt) && (!city || p.city === city) && (!st || p.status === st) &&
       (minV === 0 || (p.value != null && p.value >= minV)) && matches(p, q));
     list.sort((a,b)=>{
       let av = a[sortKey], bv = b[sortKey];
@@ -572,10 +580,18 @@
   function fillSelect(sel, values){
     values.forEach(v => { const o = document.createElement("option"); o.value = v; o.textContent = v; sel.appendChild(o); });
   }
+  function fillCities(){
+    const sel = $("pr-filter-city"), stt = $("pr-filter-state").value, prev = sel.value;
+    const cities = [...new Set(PERMITS.filter(p => !stt || (p.state || "MA") === stt).map(p => p.city).filter(Boolean))].sort();
+    sel.innerHTML = '<option value="">All Cities</option>';
+    fillSelect(sel, cities);
+    if(cities.includes(prev)) sel.value = prev;
+  }
   function populateFilters(){
     const uniq = k => [...new Set(PERMITS.map(p=>p[k]).filter(Boolean))].sort();
     fillSelect($("pr-filter-cat"), ["New Construction","Addition","Renovation","Demolition","Unspecified"].filter(c => PERMITS.some(p=>p.category===c)));
-    fillSelect($("pr-filter-city"), uniq("city"));
+    fillSelect($("pr-filter-state"), uniq("state"));
+    fillCities();
     fillSelect($("pr-filter-status"), uniq("status"));
   }
 
@@ -633,7 +649,7 @@
     const p = PERMITS.find(x => x.id === id) || saved[id];
     if(!p) return;
     const isSaved = !!saved[p.id];
-    const q = encodeURIComponent(`${p.address}${/MA\b/.test(p.address) ? "" : ", " + p.city + ", MA"}`);
+    const q = encodeURIComponent(`${p.address}${new RegExp("\\b" + (p.state || "MA") + "\\b").test(p.address) ? "" : ", " + p.city + ", " + (p.state || "MA")}`);
     const boston = p.city === "Boston" && p.contractor && p.contractor === p.applicant;
     $("pr-detail-card").innerHTML = `
       <button class="pr-detail-close" id="pr-close" aria-label="Close">&times;</button>
@@ -641,7 +657,7 @@
         <div>
           <div class="pr-detail-permitnum">PERMIT NO. ${esc(p.permitNumber)}</div>
           <h2 class="pr-detail-addr">${esc(p.address)}</h2>
-          <div style="color:var(--ink-dim);font-size:13px;margin-top:2px;">${esc(p.city)}, MA</div>
+          <div style="color:var(--ink-dim);font-size:13px;margin-top:2px;">${esc(p.city)}, ${esc(p.state || "MA")}</div>
         </div>
         <div class="pr-stamp">${esc(p.status || p.category)}</div>
       </div>
@@ -689,7 +705,8 @@
   $("pr-overlay").addEventListener("click", e => { if(e.target === $("pr-overlay")) closeDetail(); });
   document.addEventListener("keydown", e => { if(e.key === "Escape") closeDetail(); });
   $("pr-more").addEventListener("click", () => { shown += PAGE_SIZE; renderRadar(); });
-  ["pr-search","pr-filter-cat","pr-filter-city","pr-filter-status","pr-filter-value"].forEach(id => {
+  $("pr-filter-state").addEventListener("change", fillCities);
+  ["pr-search","pr-filter-cat","pr-filter-state","pr-filter-city","pr-filter-status","pr-filter-value"].forEach(id => {
     $(id).addEventListener(id === "pr-search" ? "input" : "change", () => { shown = PAGE_SIZE; renderRadar(); });
   });
   $("pr-search-saved").addEventListener("input", renderSaved);
