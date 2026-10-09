@@ -321,9 +321,27 @@ class CKANAdapter(BaseAdapter):
                 return f
         raise RuntimeError(f"CKAN: nenhuma coluna de data de emissão encontrada. Colunas: {fields}")
 
+    def _resolve_resource(self, base_url: str) -> str:
+        """Se o cadastro informar package_id, pergunta ao CKAN qual arquivo do pacote tem tabela de consulta ativa
+        (o id exibido na página nem sempre é o da tabela)."""
+        rid = self.config.get("resource_id")
+        pkg = self.config.get("package_id")
+        if not pkg:
+            return rid
+        url = base_url.replace("datastore_search_sql", "package_show")
+        res = _http_get(url, {"id": pkg}).json().get("result", {}).get("resources", [])
+        active = [r for r in res if r.get("datastore_active")]
+        print(f"[info] {self.city}: arquivos do pacote: {[(r.get('name'), r.get('format'), r.get('id'), bool(r.get('datastore_active'))) for r in res][:6]}")
+        for r in active:
+            if r.get("id") == rid:
+                return rid
+        if active:
+            return active[0]["id"]
+        raise RuntimeError(f"CKAN: pacote {pkg} não tem arquivo com consulta ativa")
+
     def fetch_raw(self, days_back: int) -> list[dict]:
         base_url = self.config["base_url"]
-        resource_id = self.config["resource_id"]
+        resource_id = self._resolve_resource(base_url)
         date_field = self.config.get("date_field", "issued_date")
         if date_field == "auto":
             date_field = self._discover_date_field(base_url, resource_id)
