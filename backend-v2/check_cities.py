@@ -248,7 +248,7 @@ def dry_run(cfg: dict) -> dict:
         ad = ADAPTERS[cfg["source_type"]](city=cfg["name"], state=cfg.get("_state", "massachusetts"), config=cfg.get("config", {}),
                                           field_map=cfg.get("field_map", {}), source_link=cfg.get("source_link", ""))
         with contextlib.redirect_stdout(buf):
-            rows = ad.fetch(days_back=14)
+            rows = ad.fetch(days_back=max(14, int((cfg.get("config") or {}).get("min_days_back", 0))))
         sample = rows[0] if rows else None
         out["dry"] = {"ok": True, "count": len(rows),
                       "sample": ({k: sample.get(k) for k in ("permit_number", "address", "permit_type", "category",

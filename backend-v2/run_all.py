@@ -92,7 +92,7 @@ def run(states_filter: list[str] | None = None, days_back: int = 2,
                     field_map=city_cfg.get("field_map", {}),
                     source_link=city_cfg.get("source_link", ""),
                 )
-                permits = adapter.fetch(days_back=days_back)
+                permits = adapter.fetch(days_back=max(days_back, int(city_cfg.get("config", {}).get("min_days_back", 0))))
             except Exception as e:  # noqa: BLE001
                 skipped.append({"city": city, "state": state_name, "reason": f"erro: {e}"})
                 print(f"[erro] {city}, {state_name}: {e}")
