@@ -34,6 +34,23 @@
     "category": "Renovation"
   },
   {
+    "source_city": "Boston",
+    "source_state": "massachusetts",
+    "source_link": "https://www.boston.gov/boston-permitting",
+    "city": "Boston",
+    "permit_number": "SF1908060",
+    "address": "35 Winthrop ST",
+    "permit_type": "Short Form Bldg Permit",
+    "status": "Open",
+    "estimated_value": 59630.0,
+    "issue_date": "2026-10-24",
+    "description": "-Bathroom- remove tub surround tile, floor tile, vanity. Install new -Kitchen - remove old cabinets install new. -Install Vinyl plank flooring over tile. - build bookcases - close in door from wall in bedroom. Move door to non structural wall on hall side. -appliances -paint -electrician -plumber",
+    "owner": null,
+    "applicant": "Fred Delmuto",
+    "contractor": "Fred Delmuto",
+    "category": "Renovation"
+  },
+  {
     "source_city": "Concord",
     "source_state": "massachusetts",
     "source_link": "https://permiteyes.us/concord/publicview.php",
